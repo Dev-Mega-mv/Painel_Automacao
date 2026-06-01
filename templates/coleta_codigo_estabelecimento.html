@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coleta Codigo Estabelecimento - Ativador Pro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+  <style>
+    .sheet-wrap { overflow-x:auto; border-radius:10px; border:1.5px solid #d0e3ff; background:#fff; margin:.75rem 0 1rem; }
+    .sheet-table { border-collapse:collapse; width:100%; font-family:'DM Sans',sans-serif; font-size:.78rem; }
+    .sheet-table thead tr { background:#0f766e; color:#fff; }
+    .sheet-table thead th { padding:.55rem .85rem; text-align:left; font-weight:600; letter-spacing:.04em; white-space:nowrap; }
+    .sheet-table tbody tr:nth-child(odd) { background:#f0fdfa; }
+    .sheet-table tbody tr:nth-child(even) { background:#fff; }
+    .sheet-table tbody td { padding:.45rem .85rem; border-top:1px solid #ccfbf1; }
+    .drop-zone { border:2px dashed #5eead4; border-radius:12px; padding:2rem; text-align:center; background:linear-gradient(180deg,#f0fdfa,#ffffff); cursor:pointer; transition:all .2s; position:relative; }
+    .drop-zone:hover,.drop-zone.drag-over { border-color:#0f766e; background:#ecfeff; }
+    .drop-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+    .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .feature-box { border-radius:12px; border:1.5px solid #bfdbfe; background:#f8fbff; padding:1rem 1.1rem; }
+    .feature-box.teal { border-color:#99f6e4; background:#f0fdfa; }
+    .feature-box h4 { font-family:'Syne',sans-serif; font-size:.9rem; color:#0a1628; margin-bottom:.35rem; }
+    .feature-box p { font-size:.82rem; color:#4b6080; line-height:1.55; }
+    .tag { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:4px 10px; font-size:.72rem; font-weight:700; }
+    .tag-a { background:#dbeafe; color:#1d4ed8; }
+    .tag-b { background:#ccfbf1; color:#0f766e; }
+    @media(max-width:760px){ .info-grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <a href="/" class="topbar-brand">
+      <img src="{{ url_for('static', filename='css/LogoMegavale.png') }}" style="height:30px;width:auto;" alt="Megavale">
+      <span class="topbar-name">Ativador <span>Pro</span></span>
+    </a>
+    <div class="topbar-nav">
+      <a href="/">Inicio</a>
+      <a href="/individual">Individual</a>
+      <a href="/lote">Lote</a>
+      <a href="/coleta-codigo-estabelecimento" class="active">Coleta</a>
+      <a href="/status">Status</a>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <div class="page-header">
+      <h1>Coleta Codigo Estabelecimento</h1>
+      <p>Coleta a linha desejada em Codigo Estabelecimento e consolida os contratos por situacao.</p>
+    </div>
+
+    <div class="flash-container">
+      {% with messages = get_flashed_messages() %}{% if messages %}
+        {% for msg in messages %}<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill"></i> {{ msg }}</div>{% endfor %}
+      {% endif %}{% endwith %}
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard('cred-body','cred-icon')">
+        <h5><span class="icon"><i class="bi bi-shield-lock-fill"></i></span> Credenciais Infox</h5>
+        <i class="bi bi-chevron-up" id="cred-icon" style="color:#4b6080;transition:.2s;"></i>
+      </div>
+      <div class="card-body" id="cred-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group"><label>Login</label><input type="text" id="login_infox" placeholder="Usuario Infox"></div>
+          <div class="form-group"><label>Senha</label><input type="password" id="senha_infox" placeholder="••••••••"></div>
+        </div>
+      </div>
+    </div>
+
+    <form method="post" action="{{ url_for('coleta_codigo_estabelecimento') }}" enctype="multipart/form-data" id="mainForm">
+      <input type="hidden" id="h_login" name="login_infox">
+      <input type="hidden" id="h_senha" name="senha_infox">
+      <input type="hidden" name="tipo_pesquisa" id="val_tipo_pesquisa" value="COD">
+
+      <div class="card">
+        <div class="card-header">
+          <h5><span class="icon"><i class="bi bi-sliders"></i></span> Configuracoes da Coleta</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Tipo de Pesquisa</label>
+            <div class="toggle-group">
+              <button type="button" class="toggle-btn active" data-field="tipo_pesquisa" data-value="COD" onclick="selectToggle(this)">
+                <i class="bi bi-hash"></i> Codigo
+              </button>
+              <button type="button" class="toggle-btn" data-field="tipo_pesquisa" data-value="CNPJ" onclick="selectToggle(this)">
+                <i class="bi bi-building"></i> CNPJ
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top:1rem;">
+            <label>Origem da Transacao</label>
+            <input type="text" name="origem_transacao" placeholder="Ex: CARDSE" required>
+            <div class="form-hint">O robo vai procurar a linha correspondente a essa origem para cada credenciado.</div>
+          </div>
+
+          <div class="info-grid" style="margin-top:1rem;">
+            <div class="feature-box">
+              <span class="tag tag-a"><i class="bi bi-table"></i> Codigo Estabelecimento</span>
+              <h4>Coleta direcionada</h4>
+              <p>Salva Origem Transacao, Codigo Estabelecimento, Data Cadastro, Data Alteracao e Situacao apenas da linha desejada.</p>
+            </div>
+            <div class="feature-box teal">
+              <span class="tag tag-b"><i class="bi bi-diagram-3"></i> Contratos agrupados</span>
+              <h4>Resumo compacto</h4>
+              <p>A planilha final agrupa os contratos por situacao, conta vazios e evita listar linha a linha quando todos os contratos estiverem no mesmo status.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h5><span class="icon"><i class="bi bi-file-earmark-spreadsheet-fill"></i></span> Planilha de Entrada</h5>
+        </div>
+        <div class="card-body">
+          <div class="drop-zone" id="dropZone">
+            <input type="file" name="file" id="fileInput" accept=".xlsx,.xls" onchange="showFilename(this)">
+            <div style="font-size:2rem;color:#14b8a6;margin-bottom:.5rem;"><i class="bi bi-cloud-arrow-up"></i></div>
+            <div style="font-weight:700;color:#0f766e;font-size:.95rem;">Clique para selecionar ou arraste a planilha aqui</div>
+            <div style="font-size:.8rem;color:#4b6080;margin-top:.35rem;">Formatos aceitos: .xlsx, .xls</div>
+            <div id="filename-display" style="font-size:.82rem;color:#10b981;margin-top:.55rem;font-weight:600;"></div>
+          </div>
+
+          <div style="margin-top:1.35rem;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:#0a1628;margin-bottom:.6rem;">
+              <i class="bi bi-info-circle-fill" style="color:#0f766e;margin-right:6px;"></i> Estrutura esperada
+            </div>
+            <div class="sheet-wrap">
+              <table class="sheet-table">
+                <thead>
+                  <tr>
+                    <th>COD</th>
+                    <th>Observacao</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>12345</td><td>Codigo Infox do credenciado</td></tr>
+                  <tr><td>04149637010753</td><td>CNPJ quando o tipo de pesquisa for CNPJ</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="alert alert-info" style="margin-top:.75rem;font-size:.82rem;">
+              <i class="bi bi-save2"></i>
+              A automacao salva a planilha parcial a cada 10 credenciados processados e registra nos logs onde houve erro ou interrupcao.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:.75rem;">
+        <button type="submit" class="btn btn-primary btn-lg" style="flex:1;">
+          <i class="bi bi-play-fill"></i> Iniciar Coleta
+        </button>
+        <a href="/" class="btn btn-secondary btn-lg"><i class="bi bi-arrow-left"></i> Voltar</a>
+      </div>
+    </form>
+  </div>
+
+  <footer>Ativador Pro - Megavale © 2025</footer>
+
+  <script>
+    function toggleCard(b, i) {
+      const body = document.getElementById(b), icon = document.getElementById(i);
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      icon.style.transform = open ? 'rotate(180deg)' : 'rotate(0)';
+    }
+
+    function selectToggle(btn) {
+      const field = btn.dataset.field;
+      document.querySelectorAll(`[data-field="${field}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`val_${field}`).value = btn.dataset.value;
+    }
+
+    function showFilename(input) {
+      const display = document.getElementById('filename-display');
+      display.textContent = input.files && input.files[0] ? `Arquivo selecionado: ${input.files[0].name}` : '';
+    }
+
+    document.getElementById('mainForm').addEventListener('submit', function() {
+      document.getElementById('h_login').value = document.getElementById('login_infox').value;
+      document.getElementById('h_senha').value = document.getElementById('senha_infox').value;
+    });
+
+    const dropZone = document.getElementById('dropZone');
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+    });
+  </script>
+</body>
+</html>

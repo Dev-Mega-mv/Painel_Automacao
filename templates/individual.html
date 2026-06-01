@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ativação Individual — Ativador Pro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+  <style>
+    .acao-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
+    .acao-box { border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:1rem; background:var(--surface-2); }
+    .acao-box-title { font-size:.78rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text-secondary); margin-bottom:.6rem; display:flex; align-items:center; gap:6px; }
+    .acao-box-title .dot { width:8px; height:8px; border-radius:50%; }
+    .dot-cielo  { background:#1d4ed8; }
+    .dot-cardse { background:#6d28d9; }
+    .acao-toggle { display:flex; gap:6px; }
+    .acao-btn { flex:1; padding:.5rem; border:1.5px solid var(--border); border-radius:6px; background:var(--surface); font-size:.82rem; font-weight:500; cursor:pointer; transition:all .2s; text-align:center; font-family:'DM Sans',sans-serif; }
+    .acao-btn.ativar.active   { border-color:#10b981; background:#ecfdf5; color:#065f46; }
+    .acao-btn.desativar.active { border-color:#ef4444; background:#fef2f2; color:#991b1b; }
+    .acao-btn:not(.active):hover { border-color:var(--blue-400); }
+    #acao-ambos { display:none; }
+
+    /* ── Modo verificação toggle ── */
+    .mode-switch { display:flex; gap:0; border:1.5px solid var(--border); border-radius:8px; overflow:hidden; width:100%; }
+    .mode-btn { flex:1; padding:.6rem 1rem; border:none; background:var(--surface); font-size:.85rem; font-weight:500; cursor:pointer; transition:all .2s; font-family:'DM Sans',sans-serif; color:var(--text-secondary); display:flex; align-items:center; justify-content:center; gap:6px; }
+    .mode-btn.active { background:#1a6ef5; color:#fff; }
+    .mode-btn:first-child { border-right:1.5px solid var(--border); }
+    .mode-btn.active.verificar { background:#7c3aed; }
+
+    /* ── Produto início ── */
+    .produto-inicio-wrap { margin-top:1rem; }
+    .produto-inicio-wrap label { font-size:.82rem; color:var(--text-secondary); font-weight:500; display:flex; align-items:center; gap:6px; margin-bottom:.4rem; }
+    .produto-inicio-wrap input[type=number] { width:120px; padding:.45rem .7rem; border:1.5px solid var(--border); border-radius:6px; font-size:.9rem; font-family:'DM Sans',sans-serif; background:var(--surface); color:var(--text); }
+    .produto-inicio-wrap .hint { font-size:.75rem; color:#4b6080; margin-top:.3rem; }
+
+    /* ── Banner modo verificação ── */
+    .verificacao-banner { display:none; background:#f5f3ff; border:1.5px solid #c4b5fd; border-radius:10px; padding:.85rem 1.1rem; margin-top:1rem; font-size:.83rem; color:#5b21b6; line-height:1.5; }
+    .verificacao-banner i { margin-right:6px; }
+    .verificacao-banner strong { color:#4c1d95; }
+    .acao-section { transition:opacity .25s; }
+    .acao-section.dimmed { opacity:.35; pointer-events:none; }
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <a href="/" class="topbar-brand">
+      <img src="{{ url_for('static', filename='css/LogoMegavale.png') }}" style="height:30px;width:auto;" alt="Megavale">
+      <span class="topbar-name">Ativador <span>Pro</span></span>
+    </a>
+    <div class="topbar-nav">
+      <a href="/">Início</a>
+      <a href="/individual" class="active">Individual</a>
+      <a href="/lote">Lote</a>
+      <a href="/status">Status</a>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <div class="page-header">
+      <h1>Ativação Individual</h1>
+      <p>Ative, desative ou verifique um credenciado informando o código ou CNPJ.</p>
+    </div>
+
+    <div class="flash-container">
+      {% with messages = get_flashed_messages() %}{% if messages %}
+        {% for msg in messages %}<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill"></i> {{ msg }}</div>{% endfor %}
+      {% endif %}{% endwith %}
+    </div>
+
+    <!-- Credenciais -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard('cred-body','cred-icon')">
+        <h5><span class="icon"><i class="bi bi-shield-lock-fill"></i></span> Credenciais Infox</h5>
+        <i class="bi bi-chevron-up" id="cred-icon" style="color:#4b6080;transition:.2s;"></i>
+      </div>
+      <div class="card-body" id="cred-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group">
+            <label>Login</label>
+            <input type="text" id="login_infox" placeholder="Usuário Infox">
+          </div>
+          <div class="form-group">
+            <label>Senha</label>
+            <input type="password" id="senha_infox" placeholder="••••••••">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form method="post" action="{{ url_for('individual') }}" id="mainForm">
+      <input type="hidden" id="h_login"           name="login_infox">
+      <input type="hidden" id="h_senha"           name="senha_infox">
+      <input type="hidden" name="acao_cielo"       id="val_acao_cielo"       value="ATIVAR">
+      <input type="hidden" name="acao_cardse"      id="val_acao_cardse"      value="ATIVAR">
+      <input type="hidden" name="tecnologia"       id="val_tecnologia"       value="CIELO">
+      <input type="hidden" name="tipo_pesquisa"    id="val_tipo_pesquisa"    value="COD">
+      <input type="hidden" name="modo_verificacao" id="val_modo_verificacao" value="0">
+
+      <div class="card">
+        <div class="card-header">
+          <h5><span class="icon"><i class="bi bi-person-fill"></i></span> Dados do Credenciado</h5>
+        </div>
+        <div class="card-body">
+
+          <!-- ── Modo ── -->
+          <div class="form-group">
+            <label>Modo de Operação</label>
+            <div class="mode-switch">
+              <button type="button" class="mode-btn ativar active" id="modeBtnAtivacao" onclick="setModo('ativacao')">
+                <i class="bi bi-play-fill"></i> Ativação / Desativação
+              </button>
+              <button type="button" class="mode-btn verificar" id="modeBtnVerificacao" onclick="setModo('verificacao')">
+                <i class="bi bi-search"></i> Somente Verificar
+              </button>
+            </div>
+            <div class="verificacao-banner" id="verificacaoBanner">
+              <i class="bi bi-info-circle-fill"></i>
+              <strong>Modo Verificação:</strong> A automação irá percorrer todos os produtos e registrar o status de CIELO e CARDSE de cada um. <strong>Nenhuma alteração será feita.</strong> Ao concluir, uma planilha estará disponível para download na tela de Status.
+            </div>
+          </div>
+
+          <!-- Tipo pesquisa -->
+          <div class="form-group" style="margin-top:1rem;">
+            <label>Tipo de Pesquisa</label>
+            <div class="toggle-group">
+              <button type="button" class="toggle-btn active" data-field="tipo_pesquisa" data-value="COD" onclick="selectToggle(this)">
+                <i class="bi bi-hash"></i> Código
+              </button>
+              <button type="button" class="toggle-btn" data-field="tipo_pesquisa" data-value="CNPJ" onclick="selectToggle(this)">
+                <i class="bi bi-building"></i> CNPJ
+              </button>
+            </div>
+          </div>
+
+          <!-- Código -->
+          <div class="form-group" style="margin-top:1rem;">
+            <label>Código / CNPJ</label>
+            <input type="text" name="cod_cnpj" placeholder="Ex: 12345 ou 04149637010753" required>
+          </div>
+
+          <!-- Tecnologia -->
+          <div class="form-group acao-section" id="tecSection" style="margin-top:1rem;">
+            <label>Tecnologia</label>
+            <div class="toggle-group">
+              <button type="button" class="toggle-btn active" data-field="tecnologia" data-value="CIELO" onclick="selectToggle(this); atualizarAcoes()">
+                <i class="bi bi-credit-card"></i> CIELO
+              </button>
+              <button type="button" class="toggle-btn" data-field="tecnologia" data-value="CARDSE" onclick="selectToggle(this); atualizarAcoes()">
+                <i class="bi bi-credit-card-2-front"></i> CARDSE
+              </button>
+              <button type="button" class="toggle-btn" data-field="tecnologia" data-value="AMBOS" onclick="selectToggle(this); atualizarAcoes()">
+                <i class="bi bi-layers"></i> Ambos
+              </button>
+            </div>
+          </div>
+
+          <!-- Ação CIELO simples -->
+          <div id="acao-cielo-simples" class="acao-section" style="margin-top:1rem;">
+            <label>Ação — CIELO</label>
+            <div class="acao-toggle">
+              <button type="button" class="acao-btn ativar active" onclick="setAcao('cielo','ATIVAR',this)">
+                <i class="bi bi-check-circle"></i> Ativar
+              </button>
+              <button type="button" class="acao-btn desativar" onclick="setAcao('cielo','DESATIVAR',this)">
+                <i class="bi bi-x-circle"></i> Desativar
+              </button>
+            </div>
+          </div>
+
+          <!-- Ação CARDSE simples -->
+          <div id="acao-cardse-simples" class="acao-section" style="margin-top:1rem;display:none;">
+            <label>Ação — CARDSE</label>
+            <div class="acao-toggle">
+              <button type="button" class="acao-btn ativar active" onclick="setAcao('cardse','ATIVAR',this)">
+                <i class="bi bi-check-circle"></i> Ativar
+              </button>
+              <button type="button" class="acao-btn desativar" onclick="setAcao('cardse','DESATIVAR',this)">
+                <i class="bi bi-x-circle"></i> Desativar
+              </button>
+            </div>
+          </div>
+
+          <!-- Ação AMBOS -->
+          <div id="acao-ambos" class="acao-grid acao-section">
+            <div class="acao-box">
+              <div class="acao-box-title"><span class="dot dot-cielo"></span> CIELO</div>
+              <div class="acao-toggle">
+                <button type="button" class="acao-btn ativar active" onclick="setAcao('cielo','ATIVAR',this)">
+                  <i class="bi bi-check-circle"></i> Ativar
+                </button>
+                <button type="button" class="acao-btn desativar" onclick="setAcao('cielo','DESATIVAR',this)">
+                  <i class="bi bi-x-circle"></i> Desativar
+                </button>
+              </div>
+            </div>
+            <div class="acao-box">
+              <div class="acao-box-title"><span class="dot dot-cardse"></span> CARDSE</div>
+              <div class="acao-toggle">
+                <button type="button" class="acao-btn ativar active" onclick="setAcao('cardse','ATIVAR',this)">
+                  <i class="bi bi-check-circle"></i> Ativar
+                </button>
+                <button type="button" class="acao-btn desativar" onclick="setAcao('cardse','DESATIVAR',this)">
+                  <i class="bi bi-x-circle"></i> Desativar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Produto início ── -->
+          <div class="produto-inicio-wrap">
+            <label><i class="bi bi-skip-forward-fill" style="color:#1a6ef5;"></i> Iniciar a partir do produto</label>
+            <input type="number" name="produto_inicio" id="produtoInicio" min="1" value="1" placeholder="1">
+            <div class="hint">Deixe 1 para processar desde o primeiro produto. Para retomar de onde parou, informe o número do produto.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div style="display:flex;gap:.75rem;">
+        <button type="submit" class="btn btn-primary btn-lg" id="btnSubmit" style="flex:1;">
+          <i class="bi bi-play-fill" id="btnIcon"></i> <span id="btnLabel">Iniciar</span>
+        </button>
+        <a href="/" class="btn btn-secondary btn-lg"><i class="bi bi-arrow-left"></i> Voltar</a>
+      </div>
+    </form>
+  </div>
+
+  <footer>Ativador Pro — Megavale © 2025</footer>
+
+  <script>
+    function toggleCard(b, i) {
+      const body=document.getElementById(b), icon=document.getElementById(i);
+      const open=body.style.display!=='none';
+      body.style.display=open?'none':'block';
+      icon.style.transform=open?'rotate(180deg)':'rotate(0)';
+    }
+
+    function selectToggle(btn) {
+      const field=btn.dataset.field;
+      document.querySelectorAll(`[data-field="${field}"]`).forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`val_${field}`).value=btn.dataset.value;
+    }
+
+    function setAcao(tec, valor, btn) {
+      document.querySelectorAll(`.acao-btn.ativar`).forEach(b=>{
+        if(b.closest(`#acao-${tec}-simples, #acao-ambos`)) b.classList.remove('active');
+      });
+      document.querySelectorAll(`.acao-btn.desativar`).forEach(b=>{
+        if(b.closest(`#acao-${tec}-simples, #acao-ambos`)) b.classList.remove('active');
+      });
+      const classe=valor==='ATIVAR'?'ativar':'desativar';
+      [`#acao-${tec}-simples`,`#acao-ambos`].forEach(sel=>{
+        const container=document.querySelector(sel);
+        if(container){ const b=container.querySelector(`.acao-btn.${classe}`); if(b) b.classList.add('active'); }
+      });
+      document.getElementById(`val_acao_${tec}`).value=valor;
+    }
+
+    function atualizarAcoes() {
+      const tec=document.getElementById('val_tecnologia').value;
+      document.getElementById('acao-cielo-simples').style.display  = tec==='CIELO'  ? 'block':'none';
+      document.getElementById('acao-cardse-simples').style.display = tec==='CARDSE' ? 'block':'none';
+      document.getElementById('acao-ambos').style.display          = tec==='AMBOS'  ? 'grid' :'none';
+    }
+
+    function setModo(modo) {
+      const isVerif = modo === 'verificacao';
+      document.getElementById('val_modo_verificacao').value = isVerif ? '1' : '0';
+      document.getElementById('modeBtnAtivacao').classList.toggle('active', !isVerif);
+      document.getElementById('modeBtnVerificacao').classList.toggle('active', isVerif);
+      document.getElementById('verificacaoBanner').style.display = isVerif ? 'block' : 'none';
+
+      // Dimma seções de ação no modo verificação
+      document.querySelectorAll('.acao-section').forEach(el => {
+        el.classList.toggle('dimmed', isVerif);
+      });
+
+      // Atualiza botão submit
+      document.getElementById('btnIcon').className  = isVerif ? 'bi bi-search' : 'bi bi-play-fill';
+      document.getElementById('btnLabel').textContent = isVerif ? 'Iniciar Verificação' : 'Iniciar';
+    }
+
+    document.getElementById('btnSubmit').addEventListener('click', function() {
+      document.getElementById('h_login').value=document.getElementById('login_infox').value;
+      document.getElementById('h_senha').value=document.getElementById('senha_infox').value;
+    });
+  </script>
+</body>
+</html>

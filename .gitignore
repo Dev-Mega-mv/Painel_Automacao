@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+
+selenium-profile/
+uploads/
+
+ativador_log.txt
+debug_ativador.txt
+
+*.xlsx
+*.xls
+
+.env
+.env.*
+*.log
+
