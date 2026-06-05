@@ -54,6 +54,7 @@ def individual():
         acao_cardse      = acao_valida(request.form.get('acao_cardse', 'ATIVAR'))
         modo_verificacao = request.form.get('modo_verificacao') == '1'
         produto_inicio   = int(request.form.get('produto_inicio') or 1)
+        cardse_statuses  = request.form.getlist('cardse_statuses')  # situações permitidas para DESATIVAR CARDSE
 
         if not cod_cnpj:
             flash('Informe o código ou CNPJ.')
@@ -75,6 +76,7 @@ def individual():
                 tecnologia_padrao=tecnologia,
                 acao_cielo=acao_cielo,
                 acao_cardse=acao_cardse,
+                cardse_statuses=cardse_statuses,
                 modo_verificacao=modo_verificacao,
                 produto_inicio=produto_inicio,
             ).iniciar()
@@ -101,6 +103,7 @@ def lote():
         modo_coleta      = request.form.get('modo_coleta') == '1'
         origem_transacao_alvo = request.form.get('origem_transacao_alvo', 'CARDSE').strip()
         produto_inicio   = int(request.form.get('produto_inicio') or 1)
+        cardse_statuses  = request.form.getlist('cardse_statuses')  # situações permitidas para DESATIVAR CARDSE
 
         if not login_infox or not senha_infox:
             flash('Login e senha são obrigatórios.')
@@ -162,8 +165,11 @@ def lote():
                 tecnologia_padrao=tecnologia_padrao,
                 acao_cielo=acao_cielo,
                 acao_cardse=acao_cardse,
-                modo_verificacao=modo_verificacao,                modo_coleta_estabelecimento=modo_coleta,
-                origem_transacao_alvo=origem_transacao_alvo,                produto_inicio=produto_inicio,
+                cardse_statuses=cardse_statuses,
+                modo_verificacao=modo_verificacao,
+                modo_coleta_estabelecimento=modo_coleta,
+                origem_transacao_alvo=origem_transacao_alvo,
+                produto_inicio=produto_inicio,
             ).iniciar()
 
         threading.Thread(target=run, daemon=True).start()

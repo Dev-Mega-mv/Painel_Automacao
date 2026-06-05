@@ -56,10 +56,12 @@ CONTRATO_STATUS_ORDEM = [
 def _is_session_error(e):
     msg = str(e).lower()
     return (
-        "invalid session id"           in msg
-        or "no such window"            in msg
-        or "no such session"           in msg
+        "invalid session id"              in msg
+        or "no such window"               in msg
+        or "no such session"              in msg
         or "target window already closed" in msg
+        or "max retries exceeded"         in msg   # Chrome caiu (WinError 10061 / chromedriver desconectado)
+        or "connection refused"           in msg   # porta do chromedriver fechada
         or isinstance(e, InvalidSessionIdException)
     )
 
@@ -432,6 +434,7 @@ def _gerar_relatorio_coleta_xlsx(dados: list, caminho: str, meta: dict):
 class WebAppAtivador:
     def __init__(self, dados_login, lista_credenciados, tipo_pesquisa='COD',
                  tecnologia_padrao=1, acao_cielo='ATIVAR', acao_cardse='ATIVAR',
+                 cardse_statuses=None,
                  verificar_origem=False,
                  modo_verificacao=False,
                  produto_inicio=1,
@@ -443,6 +446,7 @@ class WebAppAtivador:
         self.tecnologia_padrao  = tecnologia_padrao
         self.acao_cielo_padrao  = acao_cielo.upper()
         self.acao_cardse_padrao = acao_cardse.upper()
+        self.cardse_statuses    = {str(v).strip().upper() for v in (cardse_statuses or []) if str(v).strip()}
         self.verificar_origem   = verificar_origem
         self.modo_verificacao   = modo_verificacao
         self.modo_coleta_estabelecimento = modo_coleta_estabelecimento
@@ -1104,6 +1108,20 @@ class WebAppAtivador:
         except:
             return ''
 
+    def _cardse_situacao_permitida(self, situacao):
+        situacao = (situacao or '').strip().upper()
+
+        if not self.cardse_statuses:
+            return False
+
+        for status_permitido in self.cardse_statuses:
+            status_permitido = status_permitido.strip().upper()
+
+            if status_permitido in situacao:
+                return True
+
+        return False
+
     def _aguardar_status(self, xp, esperado, timeout=4):
         esperado = esperado.upper()
         fim = time.time() + timeout
@@ -1392,8 +1410,6 @@ class WebAppAtivador:
         try:
             self.driver.implicitly_wait(0)
             while time.time() < fim:
-                if (self._get_status(XP_STATUS_CIELO) or '').upper() == 'SIM':
-                    return False
                 for xp in xpaths_ok:
                     try:
                         botoes = self.driver.find_elements(By.XPATH, xp)
@@ -1438,6 +1454,32 @@ class WebAppAtivador:
             self._aguardar_status(XP_STATUS_CIELO, 'NAO', timeout=4)
             self._voltar_para_lista_produtos(); return True
 
+    def _desabilitar_cardse_com_fallback_ativado(self):
+        """Clica no botão DESABILITAR do CARDSE, confirma o popup SIM e, se após
+        isso o status ainda for SIM (situação ENVIADO → ATIVADO), verifica se ATIVADO
+        também está na lista de situações permitidas e clica novamente para finalizar."""
+    def _desabilitar_cardse_com_fallback_ativado(self):
+        """Clica no botão DESABILITAR do CARDSE, confirma o popup SIM e, se após
+        isso o status ainda for SIM (situação ENVIADO → ATIVADO), verifica se ATIVADO
+        também está na lista de situações permitidas e clica novamente para finalizar."""
+        self.driver.find_element(By.XPATH, XP_BTN_CARDSE).click()
+        self._confirmar_popup_desfazer()
+        # Não aguarda tempo fixo; o próximo passo verifica o status atual.
+        # Se ainda estiver habilitado, tenta desativar novamente conforme regra.
+        status_apos = (self._get_status(XP_STATUS_CARDSE) or '').upper()
+        if status_apos == 'SIM':
+            situacao_apos = self._get_status(XP_SITUACAO_CARDSE)
+            self.add_log(f"CARDSE ainda habilitado após SIM (situação atual: {situacao_apos}) — verificando se deve desabilitar novamente...")
+            if self._cardse_situacao_permitida(situacao_apos):
+                self.add_log(f"Situação '{situacao_apos}' também permitida para DESATIVAR → clicando DESABILITAR novamente.")
+                self.driver.find_element(By.XPATH, XP_BTN_CARDSE).click()
+                self._confirmar_popup_desfazer()
+                self._aguardar_status(XP_STATUS_CARDSE, 'NAO', timeout=4)
+            else:
+                self.add_log(f"Situação '{situacao_apos}' NÃO está na lista para DESATIVAR — encerrando sem nova ação.")
+        else:
+            self._aguardar_status(XP_STATUS_CARDSE, 'NAO', timeout=4)
+
     def _executar_cardse(self, nome, contador, acao):
         s = self._get_status(XP_STATUS_CARDSE)
         habilitado = s.upper() == 'SIM'
@@ -1453,10 +1495,11 @@ class WebAppAtivador:
             if not habilitado:
                 self.add_log("CARDSE já desabilitado — sem ação.")
                 self._voltar_para_lista_produtos(); return False
+            if not self._cardse_situacao_permitida(self._get_status(XP_SITUACAO_CARDSE)):
+                self.add_log(f"CARDSE habilitado, mas situação não permitida para DESATIVAR ({self._get_status(XP_SITUACAO_CARDSE)}) — pulando.")
+                self._voltar_para_lista_produtos(); return False
             self.add_log("CARDSE habilitado → clicando DESABILITAR")
-            self.driver.find_element(By.XPATH, XP_BTN_CARDSE).click()
-            self._confirmar_popup_desfazer()
-            self._aguardar_status(XP_STATUS_CARDSE, 'NAO', timeout=4)
+            self._desabilitar_cardse_com_fallback_ativado()
             self._voltar_para_lista_produtos(); return True
 
     def _executar_ambos(self, nome, contador, acao_cielo, acao_cardse):
@@ -1486,12 +1529,13 @@ class WebAppAtivador:
                 self.add_log("CARDSE desabilitado → HABILITAR")
                 self._clicar_rede_captura(XP_BTN_CARDSE, XP_STATUS_CARDSE, 'SIM', 'CARDSE', timeout=4); alterou = True
         else:
-            if not hab_s: self.add_log("CARDSE já desabilitado — sem ação.")
+            if not hab_s:
+                self.add_log("CARDSE já desabilitado — sem ação.")
+            elif not self._cardse_situacao_permitida(self._get_status(XP_SITUACAO_CARDSE)):
+                self.add_log(f"CARDSE habilitado, mas situação não permitida para DESATIVAR ({self._get_status(XP_SITUACAO_CARDSE)}) — pulando.")
             else:
                 self.add_log("CARDSE habilitado → DESABILITAR")
-                self.driver.find_element(By.XPATH, XP_BTN_CARDSE).click()
-                self._confirmar_popup_desfazer(); alterou = True
-                self._aguardar_status(XP_STATUS_CARDSE, 'NAO', timeout=4)
+                self._desabilitar_cardse_com_fallback_ativado(); alterou = True
 
         self._voltar_para_lista_produtos()
         return alterou

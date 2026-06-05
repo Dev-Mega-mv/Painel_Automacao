@@ -180,6 +180,17 @@
             </div>
           </div>
 
+          <div class="form-group" style="margin-top:1rem;">
+            <label>Somente DESATIVAR CARDSE quando situação</label>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem;margin-top:.5rem;">
+              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses" value="APROVADO"> APROVADO</label>
+              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses" value="ENVIADO"> ENVIADO</label>
+              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses" value="ATIVADO"> ATIVADO</label>
+              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses" value="CANCELADO NA REDE"> CANCELADO NA REDE</label>
+            </div>
+            <div class="hint">Se não marcar nenhum item, nenhum CARDSE será desativado.</div>
+          </div>
+
           <!-- Ação AMBOS -->
           <div id="acao-ambos" class="acao-grid acao-section">
             <div class="acao-box">
