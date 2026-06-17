@@ -1,61 +1,312 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Status — Ativador Pro</title>
+  <title>Status — Painel de Automações</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
   <style>
-    .status-layout { display:grid; grid-template-columns:380px 1fr; gap:1.5rem; align-items:start; }
-    .ring-wrap { display:flex; flex-direction:column; align-items:center; padding:1.5rem 0; }
-    .ring-svg { width:160px; height:160px; }
-    .ring-bg  { fill:none; stroke:#e2e8f0; stroke-width:12; }
-    .ring-fg  { fill:none; stroke-width:12; stroke-linecap:round; transition:stroke-dashoffset .6s ease; transform:rotate(-90deg); transform-origin:50% 50%; }
-    .ring-pct { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; fill:#0a1628; }
-    .ring-lbl { font-size:.7rem; fill:#4b6080; font-family:'DM Sans',sans-serif; }
-    .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; width:100%; margin-top:1rem; }
-    .stat-box { background:#f4f8ff; border:1.5px solid #d0e3ff; border-radius:10px; padding:.75rem 1rem; text-align:center; }
-    .stat-num { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:#1a6ef5; }
-    .stat-lbl { font-size:.72rem; color:#4b6080; margin-top:2px; }
-    .log-panel { background:#0a1628; border-radius:14px; border:1.5px solid #1e3a5f; display:flex; flex-direction:column; min-height:480px; max-height:75vh; overflow:hidden; }
-    .log-header { padding:.85rem 1.1rem; border-bottom:1px solid #1e3a5f; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-    .log-title  { font-family:'Syne',sans-serif; font-size:.88rem; font-weight:700; color:#e2e8f0; letter-spacing:.04em; display:flex; align-items:center; gap:8px; }
-    .log-count  { font-size:.72rem; color:#4b6080; background:#0f2340; padding:2px 8px; border-radius:99px; }
-    .log-body   { overflow-y:auto; padding:.85rem 1rem; flex:1; scroll-behavior:smooth; }
-    .log-body::-webkit-scrollbar { width:5px; }
-    .log-body::-webkit-scrollbar-track { background:#0f2340; }
-    .log-body::-webkit-scrollbar-thumb { background:#1e3a5f; border-radius:99px; }
-    .log-entry  { font-family:'Courier New',monospace; font-size:.77rem; padding:2px 0; line-height:1.6; white-space:pre-wrap; word-break:break-word; color:#94a3b8; }
-    .log-entry.err  { color:#f87171; }
-    .log-entry.warn { color:#fbbf24; }
-    .log-entry.ok   { color:#34d399; }
-    .log-entry.sep  { color:#1e3a5f; }
-    .log-entry.info { color:#7dd3fc; }
-    .controls { display:flex; gap:.6rem; margin-top:1rem; width:100%; }
-    .status-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-    .dot-running { background:#10b981; animation:pulse 1.5s infinite; }
-    .dot-idle    { background:#4b6080; }
-    .dot-done    { background:#1a6ef5; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.3)} }
-    .current-badge { background:#1e3a5f; border-radius:8px; padding:.5rem .85rem; font-size:.8rem; color:#7dd3fc; font-family:'Courier New',monospace; margin-top:.75rem; width:100%; text-align:center; word-break:break-all; box-sizing:border-box; }
+    .status-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .ring-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 0;
+    }
+
+    .ring-svg {
+      width: 160px;
+      height: 160px;
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke: #e2e8f0;
+      stroke-width: 12;
+    }
+
+    .ring-fg {
+      fill: none;
+      stroke-width: 12;
+      stroke-linecap: round;
+      transition: stroke-dashoffset .6s ease;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+
+    .ring-pct {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      fill: #0a1628;
+    }
+
+    .ring-lbl {
+      font-size: .7rem;
+      fill: #4b6080;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .stat-box {
+      background: #f4f8ff;
+      border: 1.5px solid #d0e3ff;
+      border-radius: 10px;
+      padding: .75rem 1rem;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1a6ef5;
+    }
+
+    .stat-lbl {
+      font-size: .72rem;
+      color: #4b6080;
+      margin-top: 2px;
+    }
+
+    .log-panel {
+      background: #0a1628;
+      border-radius: 14px;
+      border: 1.5px solid #1e3a5f;
+      display: flex;
+      flex-direction: column;
+      min-height: 480px;
+      max-height: 75vh;
+      overflow: hidden;
+    }
+
+    .log-header {
+      padding: .85rem 1.1rem;
+      border-bottom: 1px solid #1e3a5f;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .log-title {
+      font-family: 'Syne', sans-serif;
+      font-size: .88rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      letter-spacing: .04em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .log-count {
+      font-size: .72rem;
+      color: #4b6080;
+      background: #0f2340;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    .log-body {
+      overflow-y: auto;
+      padding: .85rem 1rem;
+      flex: 1;
+      scroll-behavior: smooth;
+    }
+
+    .log-body::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .log-body::-webkit-scrollbar-track {
+      background: #0f2340;
+    }
+
+    .log-body::-webkit-scrollbar-thumb {
+      background: #1e3a5f;
+      border-radius: 99px;
+    }
+
+    .log-entry {
+      font-family: 'Courier New', monospace;
+      font-size: .77rem;
+      padding: 2px 0;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #94a3b8;
+    }
+
+    .log-entry.err {
+      color: #f87171;
+    }
+
+    .log-entry.warn {
+      color: #fbbf24;
+    }
+
+    .log-entry.ok {
+      color: #34d399;
+    }
+
+    .log-entry.sep {
+      color: #1e3a5f;
+    }
+
+    .log-entry.info {
+      color: #7dd3fc;
+    }
+
+    .controls {
+      display: flex;
+      gap: .6rem;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-running {
+      background: #10b981;
+      animation: pulse 1.5s infinite;
+    }
+
+    .dot-idle {
+      background: #4b6080;
+    }
+
+    .dot-done {
+      background: #1a6ef5;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .6;
+        transform: scale(1.3)
+      }
+    }
+
+    .current-badge {
+      background: #1e3a5f;
+      border-radius: 8px;
+      padding: .5rem .85rem;
+      font-size: .8rem;
+      color: #7dd3fc;
+      font-family: 'Courier New', monospace;
+      margin-top: .75rem;
+      width: 100%;
+      text-align: center;
+      word-break: break-all;
+      box-sizing: border-box;
+    }
 
     /* ── Download relatório ── */
-    .relatorio-box { display:none; background:linear-gradient(135deg,#f0fdf4,#d1fae5); border:1.5px solid #6ee7b7; border-radius:12px; padding:1rem 1.1rem; margin-top:1rem; width:100%; box-sizing:border-box; }
-    .relatorio-box.visible { display:block; animation:fadeIn .5s ease; }
-    .relatorio-title { font-size:.83rem; font-weight:700; color:#065f46; margin-bottom:.6rem; display:flex; align-items:center; gap:6px; }
-    .btn-download { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:.65rem 1rem; background:#10b981; color:#fff; border:none; border-radius:8px; font-size:.9rem; font-weight:700; cursor:pointer; text-decoration:none; transition:background .2s; font-family:'DM Sans',sans-serif; box-sizing:border-box; }
-    .btn-download:hover { background:#059669; color:#fff; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .relatorio-box {
+      display: none;
+      background: linear-gradient(135deg, #f0fdf4, #d1fae5);
+      border: 1.5px solid #6ee7b7;
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      margin-top: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
-    @media(max-width:860px){ .status-layout{grid-template-columns:1fr;} }
+    .relatorio-box.visible {
+      display: block;
+      animation: fadeIn .5s ease;
+    }
+
+    .relatorio-title {
+      font-size: .83rem;
+      font-weight: 700;
+      color: #065f46;
+      margin-bottom: .6rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-download {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: .65rem 1rem;
+      background: #10b981;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s;
+      font-family: 'DM Sans', sans-serif;
+      box-sizing: border-box;
+    }
+
+    .btn-download:hover {
+      background: #059669;
+      color: #fff;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @media(max-width:860px) {
+      .status-layout {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
+
 <body>
   <nav class="topbar">
     <a href="/" class="topbar-brand">
-      <img src="{{ url_for('static', filename='css/LogoMegavale.png') }}" style="height:30px;width:auto;" alt="Megavale">
-      <span class="topbar-name">Ativador <span>Pro</span></span>
+      <img src="{{ url_for('static', filename='css/LogoMegavale.png') }}" style="height:30px;width:auto;"
+        alt="Megavale">
+      <span class="topbar-name">Painel de <span>Automações</span></span>
     </a>
     <div class="topbar-nav">
       <a href="/">Início</a>
@@ -72,6 +323,13 @@
       <p>Acompanhe o progresso em tempo real.</p>
     </div>
 
+    <div class="flash-container">
+      {% with messages = get_flashed_messages() %}{% if messages %}
+      {% for msg in messages %}<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill"></i> {{ msg
+        }}</div>{% endfor %}
+      {% endif %}{% endwith %}
+    </div>
+
     <div class="status-layout">
       <!-- Coluna esquerda -->
       <div class="card" style="padding:1rem;">
@@ -79,17 +337,15 @@
           <svg class="ring-svg" viewBox="0 0 160 160">
             <defs>
               <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style="stop-color:#1a6ef5"/>
-                <stop offset="100%" style="stop-color:#00c6ff"/>
+                <stop offset="0%" style="stop-color:#1a6ef5" />
+                <stop offset="100%" style="stop-color:#00c6ff" />
               </linearGradient>
             </defs>
-            <circle class="ring-bg" cx="80" cy="80" r="68"/>
-            <circle class="ring-fg" id="ringFg" cx="80" cy="80" r="68"
-              stroke="url(#ringGrad)"
-              stroke-dasharray="427.26"
-              stroke-dashoffset="427.26"/>
-            <text class="ring-pct"    id="ringPct"    x="80" y="76" text-anchor="middle" dominant-baseline="middle">0%</text>
-            <text class="ring-lbl"    id="ringStatus" x="80" y="97" text-anchor="middle">aguardando...</text>
+            <circle class="ring-bg" cx="80" cy="80" r="68" />
+            <circle class="ring-fg" id="ringFg" cx="80" cy="80" r="68" stroke="url(#ringGrad)" stroke-dasharray="427.26"
+              stroke-dashoffset="427.26" />
+            <text class="ring-pct" id="ringPct" x="80" y="76" text-anchor="middle" dominant-baseline="middle">0%</text>
+            <text class="ring-lbl" id="ringStatus" x="80" y="97" text-anchor="middle">aguardando...</text>
           </svg>
 
           <div class="current-badge" id="currentBadge">—</div>
@@ -142,11 +398,11 @@
     </div>
   </div>
 
-  <footer>Ativador Pro — Megavale © 2025</footer>
+  <footer>Painel de Automações — Megavale © 2026</footer>
 
   <script>
     const CIRC = 2 * Math.PI * 68; // 427.26
-    let lastCount  = 0;
+    let lastCount = 0;
     let autoScroll = true;
 
     const logBody = document.getElementById('logBody');
@@ -156,12 +412,12 @@
 
     function classifyLog(line) {
       const l = line.toLowerCase();
-      if (l.includes('erro') || l.includes('error'))                                                       return 'err';
-      if (l.includes('aviso') || l.includes('atenção') || l.includes('warning'))                          return 'warn';
+      if (l.includes('erro') || l.includes('error')) return 'err';
+      if (l.includes('aviso') || l.includes('atenção') || l.includes('warning')) return 'warn';
       if (l.includes('sucesso') || l.includes('✓') || l.includes('finalizado') || l.includes('concluído')) return 'ok';
-      if (l.includes('──') || l.includes('---'))                                                           return 'sep';
+      if (l.includes('──') || l.includes('---')) return 'sep';
       if (l.includes('navegando') || l.includes('clicando') || l.includes('pesquisando') ||
-          l.includes('processando') || l.includes('verificação') || l.includes('[verificação]'))           return 'info';
+        l.includes('processando') || l.includes('verificação') || l.includes('[verificação]')) return 'info';
       return '';
     }
 
@@ -178,12 +434,12 @@
         // Ring & stats
         updateRing(d.progress || 0);
         document.getElementById('statProcessed').textContent = d.processed;
-        document.getElementById('statTotal').textContent     = d.total;
-        document.getElementById('currentBadge').textContent  = d.current_item ? '🔄 ' + d.current_item : '—';
+        document.getElementById('statTotal').textContent = d.total;
+        document.getElementById('currentBadge').textContent = d.current_item ? '🔄 ' + d.current_item : '—';
 
         // Status text
         let statusText = 'aguardando...';
-        if (d.running)           statusText = 'em execução';
+        if (d.running) statusText = 'em execução';
         else if (d.processed > 0) statusText = 'concluído';
         document.getElementById('ringStatus').textContent = statusText;
 
@@ -193,7 +449,7 @@
 
         // Botão parar
         const btnStop = document.getElementById('btnStop');
-        btnStop.style.opacity       = d.running ? '1' : '.4';
+        btnStop.style.opacity = d.running ? '1' : '.4';
         btnStop.style.pointerEvents = d.running ? 'auto' : 'none';
 
         // Caixa de download — aparece quando tem_relatorio=true E não está rodando
@@ -210,7 +466,7 @@
           const fragment = document.createDocumentFragment();
           for (let i = lastCount; i < logs.length; i++) {
             const div = document.createElement('div');
-            div.className   = 'log-entry ' + classifyLog(logs[i]);
+            div.className = 'log-entry ' + classifyLog(logs[i]);
             div.textContent = logs[i];
             fragment.appendChild(div);
           }
@@ -219,7 +475,7 @@
           if (autoScroll) logBody.scrollTop = logBody.scrollHeight;
         }
 
-      } catch(e) {
+      } catch (e) {
         console.warn('Erro no poll:', e);
       }
 
@@ -231,4 +487,5 @@
     poll();
   </script>
 </body>
+
 </html>

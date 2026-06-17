@@ -1,78 +1,395 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ativação em Lote — Ativador Pro</title>
+  <title>Ativação em Lote — Painel de Automações</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
   <style>
-    .sheet-wrap { overflow-x:auto; border-radius:10px; border:1.5px solid #d0e3ff; background:#fff; margin:.75rem 0 1rem; }
-    .sheet-table { border-collapse:collapse; width:100%; font-family:'DM Sans',sans-serif; font-size:.78rem; }
-    .sheet-table thead tr { background:#1a6ef5; color:#fff; }
-    .sheet-table thead th { padding:.5rem .85rem; text-align:left; font-weight:600; letter-spacing:.04em; white-space:nowrap; }
-    .sheet-table thead th.opt { background:#0d2146; position:relative; }
-    .sheet-table thead th.opt::after { content:'OPCIONAL'; display:inline-block; margin-left:5px; background:#00c6ff; color:#0a1628; font-size:.58rem; font-weight:700; padding:1px 5px; border-radius:99px; vertical-align:middle; }
-    .sheet-table tbody tr:nth-child(odd)  { background:#f4f8ff; }
-    .sheet-table tbody tr:nth-child(even) { background:#fff; }
-    .sheet-table tbody td { padding:.4rem .85rem; border-top:1px solid #e8f0fe; white-space:nowrap; }
-    .badge-tec { display:inline-flex; align-items:center; padding:2px 9px; border-radius:99px; font-size:.72rem; font-weight:600; }
-    .badge-cielo     { background:#dbeafe; color:#1d4ed8; }
-    .badge-cardse    { background:#ede9fe; color:#6d28d9; }
-    .badge-ambos     { background:#d1fae5; color:#065f46; }
-    .badge-ativar    { background:#ecfdf5; color:#065f46; }
-    .badge-desativar { background:#fef2f2; color:#991b1b; }
-    .badge-vazio     { background:#f1f5f9; color:#94a3b8; font-style:italic; }
-    .rule-box { border-radius:10px; padding:.9rem 1.1rem; margin-bottom:.75rem; display:flex; gap:12px; }
-    .rule-box.rule-a { background:#eff6ff; border:1.5px solid #bfdbfe; }
-    .rule-box.rule-b { background:#f0fdf4; border:1.5px solid #bbf7d0; }
-    .rule-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.95rem; flex-shrink:0; }
-    .rule-a .rule-icon { background:#1a6ef5; color:#fff; }
-    .rule-b .rule-icon { background:#10b981; color:#fff; }
-    .rule-title { font-weight:600; font-size:.86rem; margin-bottom:.2rem; }
-    .rule-desc  { font-size:.8rem; color:#4b6080; line-height:1.5; }
-    .drop-zone { border:2px dashed #93c5fd; border-radius:10px; padding:2rem; text-align:center; background:#f4f8ff; cursor:pointer; transition:all .2s; position:relative; }
-    .drop-zone:hover,.drop-zone.drag-over { border-color:#1a6ef5; background:#eff6ff; }
-    .drop-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-    .acao-toggle { display:flex; gap:6px; }
-    .acao-btn { flex:1; padding:.5rem; border:1.5px solid var(--border); border-radius:6px; background:var(--surface); font-size:.82rem; font-weight:500; cursor:pointer; transition:all .2s; text-align:center; font-family:'DM Sans',sans-serif; }
-    .acao-btn.ativar.active    { border-color:#10b981; background:#ecfdf5; color:#065f46; }
-    .acao-btn.desativar.active { border-color:#ef4444; background:#fef2f2; color:#991b1b; }
-    .acao-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
-    .acao-box { border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:1rem; background:var(--surface-2); }
-    .acao-box-title { font-size:.78rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text-secondary); margin-bottom:.6rem; display:flex; align-items:center; gap:6px; }
-    .dot { width:8px; height:8px; border-radius:50%; }
-    .dot-cielo  { background:#1d4ed8; }
-    .dot-cardse { background:#6d28d9; }
-    #acao-ambos { display:none; }
+    .sheet-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1.5px solid #d0e3ff;
+      background: #fff;
+      margin: .75rem 0 1rem;
+    }
+
+    .sheet-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .78rem;
+    }
+
+    .sheet-table thead tr {
+      background: #1a6ef5;
+      color: #fff;
+    }
+
+    .sheet-table thead th {
+      padding: .5rem .85rem;
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    .sheet-table thead th.opt {
+      background: #0d2146;
+      position: relative;
+    }
+
+    .sheet-table thead th.opt::after {
+      content: 'OPCIONAL';
+      display: inline-block;
+      margin-left: 5px;
+      background: #00c6ff;
+      color: #0a1628;
+      font-size: .58rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 99px;
+      vertical-align: middle;
+    }
+
+    .sheet-table tbody tr:nth-child(odd) {
+      background: #f4f8ff;
+    }
+
+    .sheet-table tbody tr:nth-child(even) {
+      background: #fff;
+    }
+
+    .sheet-table tbody td {
+      padding: .4rem .85rem;
+      border-top: 1px solid #e8f0fe;
+      white-space: nowrap;
+    }
+
+    .badge-tec {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 9px;
+      border-radius: 99px;
+      font-size: .72rem;
+      font-weight: 600;
+    }
+
+    .badge-cielo {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-cardse {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .badge-ambos {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-ativar {
+      background: #ecfdf5;
+      color: #065f46;
+    }
+
+    .badge-desativar {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .badge-vazio {
+      background: #f1f5f9;
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .rule-box {
+      border-radius: 10px;
+      padding: .9rem 1.1rem;
+      margin-bottom: .75rem;
+      display: flex;
+      gap: 12px;
+    }
+
+    .rule-box.rule-a {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+    }
+
+    .rule-box.rule-b {
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+    }
+
+    .rule-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .95rem;
+      flex-shrink: 0;
+    }
+
+    .rule-a .rule-icon {
+      background: #1a6ef5;
+      color: #fff;
+    }
+
+    .rule-b .rule-icon {
+      background: #10b981;
+      color: #fff;
+    }
+
+    .rule-title {
+      font-weight: 600;
+      font-size: .86rem;
+      margin-bottom: .2rem;
+    }
+
+    .rule-desc {
+      font-size: .8rem;
+      color: #4b6080;
+      line-height: 1.5;
+    }
+
+    .drop-zone {
+      border: 2px dashed #93c5fd;
+      border-radius: 10px;
+      padding: 2rem;
+      text-align: center;
+      background: #f4f8ff;
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: #1a6ef5;
+      background: #eff6ff;
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .acao-toggle {
+      display: flex;
+      gap: 6px;
+    }
+
+    .acao-btn {
+      flex: 1;
+      padding: .5rem;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      font-size: .82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .acao-btn.ativar.active {
+      border-color: #10b981;
+      background: #ecfdf5;
+      color: #065f46;
+    }
+
+    .acao-btn.desativar.active {
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .acao-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .acao-box {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      background: var(--surface-2);
+    }
+
+    .acao-box-title {
+      font-size: .78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-secondary);
+      margin-bottom: .6rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .dot-cielo {
+      background: #1d4ed8;
+    }
+
+    .dot-cardse {
+      background: #6d28d9;
+    }
+
+    #acao-ambos {
+      display: none;
+    }
 
     /* ── Modo ── */
-    .mode-switch { display:flex; gap:0; border:1.5px solid var(--border); border-radius:8px; overflow:hidden; width:100%; }
-    .mode-btn { flex:1; padding:.6rem 1rem; border:none; background:var(--surface); font-size:.85rem; font-weight:500; cursor:pointer; transition:all .2s; font-family:'DM Sans',sans-serif; color:var(--text-secondary); display:flex; align-items:center; justify-content:center; gap:6px; }
-    .mode-btn.active { background:#1a6ef5; color:#fff; }
-    .mode-btn.active.verificar { background:#7c3aed; }
-    .mode-btn.active.coleta { background:#059669; }
-    .coleta-banner { display:none; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:10px; padding:.85rem 1.1rem; margin-top:1rem; font-size:.83rem; color:#065f46; line-height:1.5; }
-    .coleta-banner i { margin-right:6px; }
-    .coleta-banner strong { color:#047857; }
-    .verificacao-banner { display:none; background:#f5f3ff; border:1.5px solid #c4b5fd; border-radius:10px; padding:.85rem 1.1rem; margin-top:1rem; font-size:.83rem; color:#5b21b6; line-height:1.5; }
-    .verificacao-banner i { margin-right:6px; }
-    .verificacao-banner strong { color:#4c1d95; }
-    .acao-section { transition:opacity .25s; }
-    .acao-section.dimmed { opacity:.35; pointer-events:none; }
+    .mode-switch {
+      display: flex;
+      gap: 0;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: .6rem 1rem;
+      border: none;
+      background: var(--surface);
+      font-size: .85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .mode-btn.active {
+      background: #1a6ef5;
+      color: #fff;
+    }
+
+    .mode-btn.active.verificar {
+      background: #7c3aed;
+    }
+
+    .mode-btn.active.coleta {
+      background: #059669;
+    }
+
+    .coleta-banner {
+      display: none;
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+      border-radius: 10px;
+      padding: .85rem 1.1rem;
+      margin-top: 1rem;
+      font-size: .83rem;
+      color: #065f46;
+      line-height: 1.5;
+    }
+
+    .coleta-banner i {
+      margin-right: 6px;
+    }
+
+    .coleta-banner strong {
+      color: #047857;
+    }
+
+    .verificacao-banner {
+      display: none;
+      background: #f5f3ff;
+      border: 1.5px solid #c4b5fd;
+      border-radius: 10px;
+      padding: .85rem 1.1rem;
+      margin-top: 1rem;
+      font-size: .83rem;
+      color: #5b21b6;
+      line-height: 1.5;
+    }
+
+    .verificacao-banner i {
+      margin-right: 6px;
+    }
+
+    .verificacao-banner strong {
+      color: #4c1d95;
+    }
+
+    .acao-section {
+      transition: opacity .25s;
+    }
+
+    .acao-section.dimmed {
+      opacity: .35;
+      pointer-events: none;
+    }
 
     /* ── Produto início ── */
-    .produto-inicio-wrap { margin-top:1rem; }
-    .produto-inicio-wrap label { font-size:.82rem; color:var(--text-secondary); font-weight:500; display:flex; align-items:center; gap:6px; margin-bottom:.4rem; }
-    .produto-inicio-wrap input[type=number] { width:120px; padding:.45rem .7rem; border:1.5px solid var(--border); border-radius:6px; font-size:.9rem; font-family:'DM Sans',sans-serif; background:var(--surface); color:var(--text); }
-    .produto-inicio-wrap .hint { font-size:.75rem; color:#4b6080; margin-top:.3rem; }
+    .produto-inicio-wrap {
+      margin-top: 1rem;
+    }
+
+    .produto-inicio-wrap label {
+      font-size: .82rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: .4rem;
+    }
+
+    .produto-inicio-wrap input[type=number] {
+      width: 120px;
+      padding: .45rem .7rem;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-size: .9rem;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .produto-inicio-wrap .hint {
+      font-size: .75rem;
+      color: #4b6080;
+      margin-top: .3rem;
+    }
   </style>
 </head>
+
 <body>
   <nav class="topbar">
     <a href="/" class="topbar-brand">
-      <img src="{{ url_for('static', filename='css/LogoMegavale.png') }}" style="height:30px;width:auto;" alt="Megavale">
-      <span class="topbar-name">Ativador <span>Pro</span></span>
+      <img src="{{ url_for('static', filename='css/LogoMegavale.png') }}" style="height:30px;width:auto;"
+        alt="Megavale">
+      <span class="topbar-name">Painel de <span>Automações</span></span>
     </a>
     <div class="topbar-nav">
       <a href="/">Início</a>
@@ -90,7 +407,8 @@
 
     <div class="flash-container">
       {% with messages = get_flashed_messages() %}{% if messages %}
-        {% for msg in messages %}<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill"></i> {{ msg }}</div>{% endfor %}
+      {% for msg in messages %}<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill"></i> {{ msg
+        }}</div>{% endfor %}
       {% endif %}{% endwith %}
     </div>
 
@@ -102,21 +420,23 @@
       </div>
       <div class="card-body" id="cred-body">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="form-group"><label>Login</label><input type="text" id="login_infox" placeholder="Usuário Infox"></div>
-          <div class="form-group"><label>Senha</label><input type="password" id="senha_infox" placeholder="••••••••"></div>
+          <div class="form-group"><label>Login</label><input type="text" id="login_infox" placeholder="Usuário Infox">
+          </div>
+          <div class="form-group"><label>Senha</label><input type="password" id="senha_infox" placeholder="••••••••">
+          </div>
         </div>
       </div>
     </div>
 
     <form method="post" action="{{ url_for('lote') }}" enctype="multipart/form-data" id="mainForm">
-      <input type="hidden" id="h_login"           name="login_infox">
-      <input type="hidden" id="h_senha"           name="senha_infox">
-      <input type="hidden" name="acao_cielo"       id="val_acao_cielo"       value="ATIVAR">
-      <input type="hidden" name="acao_cardse"      id="val_acao_cardse"      value="ATIVAR">
-      <input type="hidden" name="tecnologia"       id="val_tecnologia"       value="CIELO">
-      <input type="hidden" name="tipo_pesquisa"    id="val_tipo_pesquisa"    value="COD">
+      <input type="hidden" id="h_login" name="login_infox">
+      <input type="hidden" id="h_senha" name="senha_infox">
+      <input type="hidden" name="acao_cielo" id="val_acao_cielo" value="ATIVAR">
+      <input type="hidden" name="acao_cardse" id="val_acao_cardse" value="ATIVAR">
+      <input type="hidden" name="tecnologia" id="val_tecnologia" value="CIELO">
+      <input type="hidden" name="tipo_pesquisa" id="val_tipo_pesquisa" value="COD">
       <input type="hidden" name="modo_verificacao" id="val_modo_verificacao" value="0">
-      <input type="hidden" name="modo_coleta"      id="val_modo_coleta"      value="0">
+      <input type="hidden" name="modo_coleta" id="val_modo_coleta" value="0">
       <input type="hidden" name="origem_transacao_alvo" id="val_origem_transacao_alvo" value="CARDSE">
 
       <!-- Configurações -->
@@ -142,38 +462,50 @@
             </div>
             <div class="verificacao-banner" id="verificacaoBanner">
               <i class="bi bi-info-circle-fill"></i>
-              <strong>Modo Verificação:</strong> A automação irá percorrer todos os produtos de cada credenciado e registrar o status de CIELO e CARDSE. <strong>Nenhuma alteração será feita.</strong> Ao concluir, uma planilha consolidada estará disponível para download na tela de Status.
+              <strong>Modo Verificação:</strong> A automação irá percorrer todos os produtos de cada credenciado e
+              registrar o status de CIELO e CARDSE. <strong>Nenhuma alteração será feita.</strong> Ao concluir, uma
+              planilha consolidada estará disponível para download na tela de Status.
             </div>
             <div class="coleta-banner" id="coletaBanner" style="display:none;">
               <i class="bi bi-info-circle-fill"></i>
-              <strong>Modo Coleta:</strong> A automação irá coletar o Código Estabelecimento e os status dos contratos para cada credenciado. <strong>Nenhuma alteração será feita.</strong> Os dados serão salvos incrementalmente na planilha.
+              <strong>Modo Coleta:</strong> A automação irá coletar o Código Estabelecimento e os status dos contratos
+              para cada credenciado. <strong>Nenhuma alteração será feita.</strong> Os dados serão salvos
+              incrementalmente na planilha.
             </div>
           </div>
 
-          <div class="form-hint" style="margin:.75rem 0 1rem;"><i class="bi bi-info-circle"></i> Configurações padrão — aplicadas quando a planilha não informar as colunas opcionais.</div>
+          <div class="form-hint" style="margin:.75rem 0 1rem;"><i class="bi bi-info-circle"></i> Configurações padrão —
+            aplicadas quando a planilha não informar as colunas opcionais.</div>
 
           <div class="form-group">
             <label>Tipo de Pesquisa</label>
             <div class="toggle-group">
-              <button type="button" class="toggle-btn active" data-field="tipo_pesquisa" data-value="COD"  onclick="selectToggle(this)"><i class="bi bi-hash"></i> Código</button>
-              <button type="button" class="toggle-btn"        data-field="tipo_pesquisa" data-value="CNPJ" onclick="selectToggle(this)"><i class="bi bi-building"></i> CNPJ</button>
+              <button type="button" class="toggle-btn active" data-field="tipo_pesquisa" data-value="COD"
+                onclick="selectToggle(this)"><i class="bi bi-hash"></i> Código</button>
+              <button type="button" class="toggle-btn" data-field="tipo_pesquisa" data-value="CNPJ"
+                onclick="selectToggle(this)"><i class="bi bi-building"></i> CNPJ</button>
             </div>
           </div>
 
           <div class="form-group coleta-section" id="origemSection" style="display:none;">
             <label>Origem da Transação Alvo</label>
             <div class="toggle-group">
-              <button type="button" class="toggle-btn active" data-field="origem_transacao_alvo" data-value="CARDSE" onclick="selectToggle(this)"><i class="bi bi-credit-card-2-front"></i> CARDSE</button>
-              <button type="button" class="toggle-btn"        data-field="origem_transacao_alvo" data-value="CIELO"  onclick="selectToggle(this)"><i class="bi bi-credit-card"></i> CIELO</button>
+              <button type="button" class="toggle-btn active" data-field="origem_transacao_alvo" data-value="CARDSE"
+                onclick="selectToggle(this)"><i class="bi bi-credit-card-2-front"></i> CARDSE</button>
+              <button type="button" class="toggle-btn" data-field="origem_transacao_alvo" data-value="CIELO"
+                onclick="selectToggle(this)"><i class="bi bi-credit-card"></i> CIELO</button>
             </div>
           </div>
 
           <div class="form-group acao-section" id="tecSection" style="margin-top:1rem;">
             <label>Tecnologia Padrão</label>
             <div class="toggle-group">
-              <button type="button" class="toggle-btn active" data-field="tecnologia" data-value="CIELO"  onclick="selectToggle(this); atualizarAcoes()"><i class="bi bi-credit-card"></i> CIELO</button>
-              <button type="button" class="toggle-btn"        data-field="tecnologia" data-value="CARDSE" onclick="selectToggle(this); atualizarAcoes()"><i class="bi bi-credit-card-2-front"></i> CARDSE</button>
-              <button type="button" class="toggle-btn"        data-field="tecnologia" data-value="AMBOS"  onclick="selectToggle(this); atualizarAcoes()"><i class="bi bi-layers"></i> Ambos</button>
+              <button type="button" class="toggle-btn active" data-field="tecnologia" data-value="CIELO"
+                onclick="selectToggle(this); atualizarAcoes()"><i class="bi bi-credit-card"></i> CIELO</button>
+              <button type="button" class="toggle-btn" data-field="tecnologia" data-value="CARDSE"
+                onclick="selectToggle(this); atualizarAcoes()"><i class="bi bi-credit-card-2-front"></i> CARDSE</button>
+              <button type="button" class="toggle-btn" data-field="tecnologia" data-value="AMBOS"
+                onclick="selectToggle(this); atualizarAcoes()"><i class="bi bi-layers"></i> Ambos</button>
             </div>
           </div>
 
@@ -181,8 +513,10 @@
           <div id="acao-cielo-simples" class="acao-section" style="margin-top:1rem;">
             <label>Ação Padrão — CIELO</label>
             <div class="acao-toggle">
-              <button type="button" class="acao-btn ativar active"   onclick="setAcao('cielo','ATIVAR',this)"><i class="bi bi-check-circle"></i> Ativar</button>
-              <button type="button" class="acao-btn desativar" onclick="setAcao('cielo','DESATIVAR',this)"><i class="bi bi-x-circle"></i> Desativar</button>
+              <button type="button" class="acao-btn ativar active" onclick="setAcao('cielo','ATIVAR',this)"><i
+                  class="bi bi-check-circle"></i> Ativar</button>
+              <button type="button" class="acao-btn desativar" onclick="setAcao('cielo','DESATIVAR',this)"><i
+                  class="bi bi-x-circle"></i> Desativar</button>
             </div>
           </div>
 
@@ -190,18 +524,24 @@
           <div id="acao-cardse-simples" class="acao-section" style="margin-top:1rem;display:none;">
             <label>Ação Padrão — CARDSE</label>
             <div class="acao-toggle">
-              <button type="button" class="acao-btn ativar active"   onclick="setAcao('cardse','ATIVAR',this)"><i class="bi bi-check-circle"></i> Ativar</button>
-              <button type="button" class="acao-btn desativar" onclick="setAcao('cardse','DESATIVAR',this)"><i class="bi bi-x-circle"></i> Desativar</button>
+              <button type="button" class="acao-btn ativar active" onclick="setAcao('cardse','ATIVAR',this)"><i
+                  class="bi bi-check-circle"></i> Ativar</button>
+              <button type="button" class="acao-btn desativar" onclick="setAcao('cardse','DESATIVAR',this)"><i
+                  class="bi bi-x-circle"></i> Desativar</button>
             </div>
           </div>
 
           <div class="form-group" style="margin-top:1rem;">
             <label>Somente DESATIVAR CARDSE quando situação</label>
             <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem;margin-top:.5rem;">
-              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses" value="APROVADO"> APROVADO</label>
-              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses" value="ENVIADO"> ENVIADO</label>
-              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses" value="ATIVADO"> ATIVADO</label>
-              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses" value="CANCELADO NA REDE"> CANCELADO NA REDE</label>
+              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses"
+                  value="APROVADO"> APROVADO</label>
+              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses"
+                  value="ENVIADO"> ENVIADO</label>
+              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses"
+                  value="ATIVADO"> ATIVADO</label>
+              <label style="display:flex;align-items:center;gap:.5rem;"><input type="checkbox" name="cardse_statuses"
+                  value="CANCELADO NA REDE"> CANCELADO NA REDE</label>
             </div>
             <div class="hint">Se não marcar nenhum item, nenhum CARDSE será desativado.</div>
           </div>
@@ -211,15 +551,19 @@
             <div class="acao-box">
               <div class="acao-box-title"><span class="dot dot-cielo"></span> CIELO</div>
               <div class="acao-toggle">
-                <button type="button" class="acao-btn ativar active"   onclick="setAcao('cielo','ATIVAR',this)"><i class="bi bi-check-circle"></i> Ativar</button>
-                <button type="button" class="acao-btn desativar" onclick="setAcao('cielo','DESATIVAR',this)"><i class="bi bi-x-circle"></i> Desativar</button>
+                <button type="button" class="acao-btn ativar active" onclick="setAcao('cielo','ATIVAR',this)"><i
+                    class="bi bi-check-circle"></i> Ativar</button>
+                <button type="button" class="acao-btn desativar" onclick="setAcao('cielo','DESATIVAR',this)"><i
+                    class="bi bi-x-circle"></i> Desativar</button>
               </div>
             </div>
             <div class="acao-box">
               <div class="acao-box-title"><span class="dot dot-cardse"></span> CARDSE</div>
               <div class="acao-toggle">
-                <button type="button" class="acao-btn ativar active"   onclick="setAcao('cardse','ATIVAR',this)"><i class="bi bi-check-circle"></i> Ativar</button>
-                <button type="button" class="acao-btn desativar" onclick="setAcao('cardse','DESATIVAR',this)"><i class="bi bi-x-circle"></i> Desativar</button>
+                <button type="button" class="acao-btn ativar active" onclick="setAcao('cardse','ATIVAR',this)"><i
+                    class="bi bi-check-circle"></i> Ativar</button>
+                <button type="button" class="acao-btn desativar" onclick="setAcao('cardse','DESATIVAR',this)"><i
+                    class="bi bi-x-circle"></i> Desativar</button>
               </div>
             </div>
           </div>
@@ -228,7 +572,15 @@
           <div class="produto-inicio-wrap">
             <label><i class="bi bi-skip-forward-fill" style="color:#1a6ef5;"></i> Iniciar a partir do produto</label>
             <input type="number" name="produto_inicio" id="produtoInicio" min="1" value="1" placeholder="1">
-            <div class="hint">Deixe 1 para processar desde o primeiro produto. Aplica-se a todos os credenciados da lista.</div>
+            <div class="hint">Deixe 1 para processar desde o primeiro produto. Aplica-se a todos os credenciados da
+              lista.</div>
+          </div>
+
+          <!-- ── Produto único ── -->
+          <div class="form-group" style="margin-top:1rem;">
+            <label><i class="bi bi-tag-fill" style="color:#10b981;"></i> Alteração de Produto Único</label>
+            <input type="text" name="produto_unico" id="produtoUnico" placeholder="Ex: ALIMENTACAO PRIVADO">
+            <div class="hint">Opcional. Preencha aqui para aplicar a todos, ou use a coluna PRODUTO na planilha.</div>
           </div>
 
         </div>
@@ -251,21 +603,26 @@
 
           <!-- Instruções -->
           <div style="margin-top:1.5rem;">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:#0a1628;margin-bottom:.75rem;">
+            <div
+              style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:#0a1628;margin-bottom:.75rem;">
               <i class="bi bi-info-circle-fill" style="color:#1a6ef5;margin-right:6px;"></i> Como montar sua planilha
             </div>
             <div class="rule-box rule-a">
               <div class="rule-icon"><i class="bi bi-table"></i></div>
               <div>
                 <div class="rule-title" style="color:#1d4ed8;">Colunas opcionais sobrepõem o front</div>
-                <div class="rule-desc">Se a planilha tiver <strong>TECNOLOGIA</strong>, <strong>ACAO_CIELO</strong> e/ou <strong>ACAO_CARDSE</strong>, cada linha usará seus próprios valores. Células vazias usam o padrão do front.</div>
+                <div class="rule-desc">Se a planilha tiver <strong>TECNOLOGIA</strong>, <strong>ACAO_CIELO</strong> e/ou
+                  <strong>ACAO_CARDSE</strong>, cada linha usará seus próprios valores. Células vazias usam o padrão do
+                  front.
+                </div>
               </div>
             </div>
             <div class="rule-box rule-b">
               <div class="rule-icon"><i class="bi bi-toggles"></i></div>
               <div>
                 <div class="rule-title" style="color:#065f46;">Sem colunas opcionais — usa configurações do front</div>
-                <div class="rule-desc">Se nenhuma coluna opcional estiver presente, todos os registros usam tecnologia e ação definidas acima.</div>
+                <div class="rule-desc">Se nenhuma coluna opcional estiver presente, todos os registros usam tecnologia e
+                  ação definidas acima.</div>
               </div>
             </div>
             <div style="font-size:.8rem;color:#4b6080;margin:.75rem 0 .4rem;font-weight:500;">Exemplo completo:</div>
@@ -274,6 +631,7 @@
                 <thead>
                   <tr>
                     <th>COD</th>
+                    <th class="opt">PRODUTO</th>
                     <th class="opt">TECNOLOGIA</th>
                     <th class="opt">ACAO_CIELO</th>
                     <th class="opt">ACAO_CARDSE</th>
@@ -281,16 +639,46 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>12345</td><td><span class="badge-tec badge-cielo">CIELO</span></td><td><span class="badge-tec badge-ativar">ATIVAR</span></td><td><span class="badge-tec badge-vazio">—</span></td><td style="color:#4b6080;">LOJA ABC</td></tr>
-                  <tr><td>67890</td><td><span class="badge-tec badge-cardse">CARDSE</span></td><td><span class="badge-tec badge-vazio">—</span></td><td><span class="badge-tec badge-desativar">DESATIVAR</span></td><td style="color:#4b6080;">MERCADO XYZ</td></tr>
-                  <tr><td>11111</td><td><span class="badge-tec badge-ambos">AMBOS</span></td><td><span class="badge-tec badge-ativar">ATIVAR</span></td><td><span class="badge-tec badge-desativar">DESATIVAR</span></td><td style="color:#4b6080;">PADARIA TAL</td></tr>
-                  <tr><td>04149637010753</td><td><span class="badge-tec badge-vazio">vazio→padrão</span></td><td><span class="badge-tec badge-vazio">vazio→padrão</span></td><td><span class="badge-tec badge-vazio">vazio→padrão</span></td><td style="color:#4b6080;">SUPERMERCADO</td></tr>
+                  <tr>
+                    <td>12345</td>
+                    <td><span class="badge-tec badge-vazio">ALIMENTACAO PRIVADO</span></td>
+                    <td><span class="badge-tec badge-cielo">CIELO</span></td>
+                    <td><span class="badge-tec badge-ativar">ATIVAR</span></td>
+                    <td><span class="badge-tec badge-vazio">—</span></td>
+                    <td style="color:#4b6080;">LOJA ABC</td>
+                  </tr>
+                  <tr>
+                    <td>67890</td>
+                    <td><span class="badge-tec badge-vazio">—</span></td>
+                    <td><span class="badge-tec badge-cardse">CARDSE</span></td>
+                    <td><span class="badge-tec badge-vazio">—</span></td>
+                    <td><span class="badge-tec badge-desativar">DESATIVAR</span></td>
+                    <td style="color:#4b6080;">MERCADO XYZ</td>
+                  </tr>
+                  <tr>
+                    <td>11111</td>
+                    <td><span class="badge-tec badge-vazio">BNDES</span></td>
+                    <td><span class="badge-tec badge-ambos">AMBOS</span></td>
+                    <td><span class="badge-tec badge-ativar">ATIVAR</span></td>
+                    <td><span class="badge-tec badge-desativar">DESATIVAR</span></td>
+                    <td style="color:#4b6080;">PADARIA TAL</td>
+                  </tr>
+                  <tr>
+                    <td>04149637010753</td>
+                    <td><span class="badge-tec badge-vazio">vazio→padrão</span></td>
+                    <td><span class="badge-tec badge-vazio">vazio→padrão</span></td>
+                    <td><span class="badge-tec badge-vazio">vazio→padrão</span></td>
+                    <td><span class="badge-tec badge-vazio">vazio→padrão</span></td>
+                    <td style="color:#4b6080;">SUPERMERCADO</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
             <div class="alert alert-info" style="margin-top:.5rem;font-size:.82rem;">
               <i class="bi bi-lightbulb-fill"></i>
-              <div><strong>Valores aceitos:</strong> TECNOLOGIA: <code>CIELO</code>, <code>CARDSE</code>, <code>AMBOS</code> &nbsp;|&nbsp; ACAO_CIELO / ACAO_CARDSE: <code>ATIVAR</code>, <code>DESATIVAR</code></div>
+              <div><strong>Valores aceitos:</strong> TECNOLOGIA: <code>CIELO</code>, <code>CARDSE</code>,
+                <code>AMBOS</code> &nbsp;|&nbsp; ACAO_CIELO / ACAO_CARDSE: <code>ATIVAR</code>, <code>DESATIVAR</code>
+              </div>
             </div>
           </div>
         </div>
@@ -305,34 +693,34 @@
     </form>
   </div>
 
-  <footer>Ativador Pro — Megavale © 2025</footer>
+  <footer>Painel de Automações — Megavale © 2026</footer>
 
   <script>
-    function toggleCard(b,i) {
-      const body=document.getElementById(b), icon=document.getElementById(i);
-      const open=body.style.display!=='none';
-      body.style.display=open?'none':'block';
-      icon.style.transform=open?'rotate(180deg)':'rotate(0)';
+    function toggleCard(b, i) {
+      const body = document.getElementById(b), icon = document.getElementById(i);
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      icon.style.transform = open ? 'rotate(180deg)' : 'rotate(0)';
     }
     function selectToggle(btn) {
-      const field=btn.dataset.field;
-      document.querySelectorAll(`[data-field="${field}"]`).forEach(b=>b.classList.remove('active'));
+      const field = btn.dataset.field;
+      document.querySelectorAll(`[data-field="${field}"]`).forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.getElementById(`val_${field}`).value=btn.dataset.value;
+      document.getElementById(`val_${field}`).value = btn.dataset.value;
     }
     function setAcao(tec, valor, btn) {
-      [`#acao-${tec}-simples`,`#acao-ambos`].forEach(sel=>{
-        const c=document.querySelector(sel); if(!c) return;
-        c.querySelectorAll('.acao-btn').forEach(b=>b.classList.remove('active'));
-        const t=c.querySelector(`.acao-btn.${valor==='ATIVAR'?'ativar':'desativar'}`); if(t) t.classList.add('active');
+      [`#acao-${tec}-simples`, `#acao-ambos`].forEach(sel => {
+        const c = document.querySelector(sel); if (!c) return;
+        c.querySelectorAll('.acao-btn').forEach(b => b.classList.remove('active'));
+        const t = c.querySelector(`.acao-btn.${valor === 'ATIVAR' ? 'ativar' : 'desativar'}`); if (t) t.classList.add('active');
       });
-      document.getElementById(`val_acao_${tec}`).value=valor;
+      document.getElementById(`val_acao_${tec}`).value = valor;
     }
     function atualizarAcoes() {
-      const tec=document.getElementById('val_tecnologia').value;
-      document.getElementById('acao-cielo-simples').style.display  = tec==='CIELO'  ? 'block':'none';
-      document.getElementById('acao-cardse-simples').style.display = tec==='CARDSE' ? 'block':'none';
-      document.getElementById('acao-ambos').style.display          = tec==='AMBOS'  ? 'grid' :'none';
+      const tec = document.getElementById('val_tecnologia').value;
+      document.getElementById('acao-cielo-simples').style.display = tec === 'CIELO' ? 'block' : 'none';
+      document.getElementById('acao-cardse-simples').style.display = tec === 'CARDSE' ? 'block' : 'none';
+      document.getElementById('acao-ambos').style.display = tec === 'AMBOS' ? 'grid' : 'none';
     }
     function setModo(modo) {
       const isVerif = modo === 'verificacao';
@@ -352,19 +740,20 @@
       document.getElementById('btnLabel').textContent = btnLabel;
     }
     function showFilename(input) {
-      document.getElementById('filename-display').textContent=input.files.length?'✓ '+input.files[0].name:'';
+      document.getElementById('filename-display').textContent = input.files.length ? '✓ ' + input.files[0].name : '';
     }
-    const dz=document.getElementById('dropZone');
-    dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over');});
-    dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
-    dz.addEventListener('drop',e=>{
+    const dz = document.getElementById('dropZone');
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+    dz.addEventListener('drop', e => {
       e.preventDefault(); dz.classList.remove('drag-over');
-      const fi=document.getElementById('fileInput'); fi.files=e.dataTransfer.files; showFilename(fi);
+      const fi = document.getElementById('fileInput'); fi.files = e.dataTransfer.files; showFilename(fi);
     });
-    document.getElementById('btnSubmit').addEventListener('click',function(){
-      document.getElementById('h_login').value=document.getElementById('login_infox').value;
-      document.getElementById('h_senha').value=document.getElementById('senha_infox').value;
+    document.getElementById('btnSubmit').addEventListener('click', function () {
+      document.getElementById('h_login').value = document.getElementById('login_infox').value;
+      document.getElementById('h_senha').value = document.getElementById('senha_infox').value;
     });
   </script>
 </body>
+
 </html>

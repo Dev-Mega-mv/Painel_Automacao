@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alterar Taxas — Painel de Automações</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+  <style>
+    .tab-nav {
+      display: flex;
+      gap: .5rem;
+      border-bottom: 1.5px solid #d0e3ff;
+      margin-bottom: 1.25rem;
+    }
+
+    .tab-btn {
+      padding: .6rem 1.25rem;
+      border: none;
+      background: none;
+      font-family: 'Syne', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      color: #4b6080;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: #1a6ef5;
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1.5px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #1a6ef5;
+      border-radius: 3px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .drop-zone {
+      border: 2px dashed #7ab3ff;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      background: linear-gradient(180deg, #eff6ff, #ffffff);
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: #1a6ef5;
+      background: #eff6ff;
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .sheet-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1.5px solid #d0e3ff;
+      background: #fff;
+      margin: .75rem 0 1rem;
+    }
+
+    .sheet-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .78rem;
+    }
+
+    .sheet-table thead tr {
+      background: #1a6ef5;
+      color: #fff;
+    }
+
+    .sheet-table thead th {
+      padding: .55rem .85rem;
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    .sheet-table tbody tr:nth-child(odd) {
+      background: #eff6ff;
+    }
+
+    .sheet-table tbody tr:nth-child(even) {
+      background: #fff;
+    }
+
+    .sheet-table tbody td {
+      padding: .45rem .85rem;
+      border-top: 1px solid #d0e3ff;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="topbar">
+    <a href="/" class="topbar-brand">
+      <img src="{{ url_for('static', filename='css/LogoMegavale.png') }}" style="height:30px;width:auto;"
+        alt="Megavale">
+      <span class="topbar-name">Painel de <span>Automações</span></span>
+    </a>
+    <div class="topbar-nav">
+      <a href="/">Início</a>
+      <a href="/individual">Individual</a>
+      <a href="/lote">Lote</a>
+      <a href="/coleta-codigo-estabelecimento">Coleta</a>
+      <a href="/status">Status</a>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <div class="page-header">
+      <h1>Alterar Taxas</h1>
+      <p>Configure taxas de reembolso e planos de compra para credenciados (Cielo/Cardse).</p>
+    </div>
+
+    <div class="flash-container">
+      {% with messages = get_flashed_messages() %}{% if messages %}
+      {% for msg in messages %}<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill"></i> {{ msg
+        }}</div>{% endfor %}
+      {% endif %}{% endwith %}
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard('cred-body','cred-icon')">
+        <h5><span class="icon"><i class="bi bi-shield-lock-fill"></i></span> Credenciais Infox</h5>
+        <i class="bi bi-chevron-up" id="cred-icon" style="color:#4b6080;transition:.2s;"></i>
+      </div>
+      <div class="card-body" id="cred-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group"><label>Login</label><input type="text" id="login_infox" placeholder="Usuário Infox">
+          </div>
+          <div class="form-group"><label>Senha</label><input type="password" id="senha_infox" placeholder="••••••••">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('individual-tab')">Alteração Individual</button>
+      <button class="tab-btn" onclick="switchTab('lote-tab')">Alteração Em Lote</button>
+    </div>
+
+    <!-- ── INDIVIDUAL ── -->
+    <div id="individual-tab" class="tab-content active">
+      <form method="post" action="{{ url_for('alt_taxa') }}" id="formIndividual">
+        <input type="hidden" id="h_login_ind" name="login_infox">
+        <input type="hidden" id="h_senha_ind" name="senha_infox">
+        <input type="hidden" name="mode" value="individual">
+        <input type="hidden" name="tipo_pesquisa" id="val_tipo_pesquisa_ind" value="COD">
+
+        <div class="card">
+          <div class="card-header">
+            <h5><span class="icon"><i class="bi bi-person-fill"></i></span> Identificação do Credenciado</h5>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Tipo de Pesquisa</label>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn active" data-field="tipo_pesquisa_ind" data-value="COD"
+                  onclick="selectToggle(this)">
+                  <i class="bi bi-hash"></i> Código
+                </button>
+                <button type="button" class="toggle-btn" data-field="tipo_pesquisa_ind" data-value="CNPJ"
+                  onclick="selectToggle(this)">
+                  <i class="bi bi-building"></i> CNPJ
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:1rem;">
+              <label>Código ou CNPJ</label>
+              <input type="text" name="cod_cnpj" placeholder="Digite o número" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h5><span class="icon"><i class="bi bi-sliders"></i></span> Parâmetros da Taxa e Reembolso</h5>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              <div class="form-group">
+                <label>Taxa (%)</label>
+                <input type="text" name="taxa" placeholder="Ex: 1,50" required>
+              </div>
+              <div class="form-group">
+                <label>Dias para Pagamento</label>
+                <input type="number" name="pag_dias" value="0" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Periodicidade</label>
+              <select name="periodicidade" id="periodicidadeSelect" onchange="checkPeriodicidade(this.value)">
+                <option value="DIÁRIA">DIÁRIA</option>
+                <option value="SEMANAL">SEMANAL</option>
+                <option value="MENSAL" selected>MENSAL</option>
+                <option value="QUINZENAL">QUINZENAL</option>
+              </select>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;" id="diasMensalRow">
+              <div class="form-group">
+                <label>Dia 1</label>
+                <input type="number" name="dia1" value="0">
+              </div>
+              <div class="form-group">
+                <label>Dia 2</label>
+                <input type="number" name="dia2" value="0">
+              </div>
+            </div>
+
+            <div class="form-group" id="diasSemanaRow" style="display:none;">
+              <label>Dias da Semana (Selecione em ordem de preferência)</label>
+              <div
+                style="display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:.5rem;margin-top:.5rem;">
+                <label style="display:flex;align-items:center;gap:6px;text-transform:none;"><input type="checkbox"
+                    name="dias_semana" value="DOMINGO"> Domingo</label>
+                <label style="display:flex;align-items:center;gap:6px;text-transform:none;"><input type="checkbox"
+                    name="dias_semana" value="SEGUNDA"> Segunda</label>
+                <label style="display:flex;align-items:center;gap:6px;text-transform:none;"><input type="checkbox"
+                    name="dias_semana" value="TERCA"> Terça</label>
+                <label style="display:flex;align-items:center;gap:6px;text-transform:none;"><input type="checkbox"
+                    name="dias_semana" value="QUARTA"> Quarta</label>
+                <label style="display:flex;align-items:center;gap:6px;text-transform:none;"><input type="checkbox"
+                    name="dias_semana" value="QUINTA"> Quinta</label>
+                <label style="display:flex;align-items:center;gap:6px;text-transform:none;"><input type="checkbox"
+                    name="dias_semana" value="SEXTA"> Sexta</label>
+                <label style="display:flex;align-items:center;gap:6px;text-transform:none;"><input type="checkbox"
+                    name="dias_semana" value="SABADO"> Sábado</label>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              <div class="form-group">
+                <label>Bancarizar</label>
+                <select name="bancarizar">
+                  <option value="NÃO" selected>NÃO</option>
+                  <option value="SIM">SIM</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Tipo Dia</label>
+                <select name="tipo_dia">
+                  <option value="INDIFERENTE" selected>INDIFERENTE</option>
+                  <option value="PAR">PAR</option>
+                  <option value="ÍMPAR">ÍMPAR</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:.75rem;">
+          <button type="submit" class="btn btn-primary btn-lg" style="flex:1;">
+            <i class="bi bi-play-fill"></i> Alterar Taxa Individual
+          </button>
+          <a href="/" class="btn btn-secondary btn-lg"><i class="bi bi-arrow-left"></i> Voltar</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── LOTE ── -->
+    <div id="lote-tab" class="tab-content">
+      <form method="post" action="{{ url_for('alt_taxa') }}" enctype="multipart/form-data" id="formLote">
+        <input type="hidden" id="h_login_lote" name="login_infox">
+        <input type="hidden" id="h_senha_lote" name="senha_infox">
+        <input type="hidden" name="mode" value="lote">
+        <input type="hidden" name="tipo_pesquisa" id="val_tipo_pesquisa_lote" value="COD">
+
+        <div class="card">
+          <div class="card-header">
+            <h5><span class="icon"><i class="bi bi-sliders"></i></span> Configuração da Pesquisa</h5>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Tipo de Pesquisa na Planilha</label>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn active" data-field="tipo_pesquisa_lote" data-value="COD"
+                  onclick="selectToggle(this)">
+                  <i class="bi bi-hash"></i> Código
+                </button>
+                <button type="button" class="toggle-btn" data-field="tipo_pesquisa_lote" data-value="CNPJ"
+                  onclick="selectToggle(this)">
+                  <i class="bi bi-building"></i> CNPJ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h5><span class="icon"><i class="bi bi-file-earmark-spreadsheet-fill"></i></span> Planilha de Entrada</h5>
+          </div>
+          <div class="card-body">
+            <div class="drop-zone" id="dropZoneLote">
+              <input type="file" name="file" id="fileInputLote" accept=".xlsx,.xls" onchange="showFilenameLote(this)"
+                required>
+              <div style="font-size:2rem;color:#3d8bff;margin-bottom:.5rem;"><i class="bi bi-cloud-arrow-up"></i></div>
+              <div style="font-weight:700;color:#1a6ef5;font-size:.95rem;">Clique para selecionar ou arraste a planilha
+                aqui</div>
+              <div style="font-size:.8rem;color:#4b6080;margin-top:.35rem;">Formatos aceitos: .xlsx, .xls</div>
+              <div id="filename-display-lote" style="font-size:.82rem;color:#10b981;margin-top:.55rem;font-weight:600;">
+              </div>
+            </div>
+
+            <div style="margin-top:1.35rem;">
+              <div
+                style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:#0a1628;margin-bottom:.6rem;">
+                <i class="bi bi-info-circle-fill" style="color:#1a6ef5;margin-right:6px;"></i> Estrutura da Planilha
+              </div>
+              <p style="font-size:.85rem;color:#4b6080;margin-bottom:.5rem;">A planilha deve conter colunas como:
+                <b>COD, TAXA, PERIODICIDADE, PAG, DIA1, DIA2, BANCARIZAR</b>
+              </p>
+              <div class="sheet-wrap">
+                <table class="sheet-table">
+                  <thead>
+                    <tr>
+                      <th>COD</th>
+                      <th>TAXA</th>
+                      <th>PERIODICIDADE</th>
+                      <th>PAG</th>
+                      <th>DIA1</th>
+                      <th>DIA2</th>
+                      <th>BANCARIZAR</th>
+                      <th>TIPO_DIA</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>12345</td>
+                      <td>1,50</td>
+                      <td>MENSAL</td>
+                      <td>0</td>
+                      <td>5</td>
+                      <td>20</td>
+                      <td>NAO</td>
+                      <td>INDIFERENTE</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:.75rem;">
+          <button type="submit" class="btn btn-primary btn-lg" style="flex:1;">
+            <i class="bi bi-play-fill"></i> Iniciar Lote
+          </button>
+          <a href="/" class="btn btn-secondary btn-lg"><i class="bi bi-arrow-left"></i> Voltar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>Painel de Automações — Megavale © 2026</footer>
+
+  <script>
+    function toggleCard(b, i) {
+      const body = document.getElementById(b), icon = document.getElementById(i);
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      icon.style.transform = open ? 'rotate(180deg)' : 'rotate(0)';
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function selectToggle(btn) {
+      const field = btn.dataset.field;
+      document.querySelectorAll(`[data-field="${field}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const valId = field.includes('ind') ? 'val_tipo_pesquisa_ind' : 'val_tipo_pesquisa_lote';
+      document.getElementById(valId).value = btn.dataset.value;
+    }
+
+    function checkPeriodicidade(val) {
+      const semRow = document.getElementById('diasSemanaRow');
+      const menRow = document.getElementById('diasMensalRow');
+      if (val === 'SEMANAL') {
+        semRow.style.display = 'block';
+        menRow.style.display = 'none';
+      } else {
+        semRow.style.display = 'none';
+        menRow.style.display = 'flex';
+      }
+    }
+
+    function showFilenameLote(input) {
+      const display = document.getElementById('filename-display-lote');
+      display.textContent = input.files && input.files[0] ? `Arquivo selecionado: ${input.files[0].name}` : '';
+    }
+
+    // Pass login context on submit
+    document.getElementById('formIndividual').addEventListener('submit', function () {
+      document.getElementById('h_login_ind').value = document.getElementById('login_infox').value;
+      document.getElementById('h_senha_ind').value = document.getElementById('senha_infox').value;
+    });
+
+    document.getElementById('formLote').addEventListener('submit', function () {
+      document.getElementById('h_login_lote').value = document.getElementById('login_infox').value;
+      document.getElementById('h_senha_lote').value = document.getElementById('senha_infox').value;
+    });
+
+    const dropZone = document.getElementById('dropZoneLote');
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+    });
+  </script>
+</body>
+
+</html>

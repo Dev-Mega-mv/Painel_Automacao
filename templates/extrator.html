@@ -4,11 +4,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coleta Codigo Estabelecimento - Painel de Automações</title>
+  <title>Extrator de Dados — Painel de Automações</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
   <style>
+    .drop-zone {
+      border: 2px dashed #7ab3ff;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      background: linear-gradient(180deg, #eff6ff, #ffffff);
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: #1a6ef5;
+      background: #eff6ff;
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
     .sheet-wrap {
       overflow-x: auto;
       border-radius: 10px;
@@ -25,7 +51,7 @@
     }
 
     .sheet-table thead tr {
-      background: #0f766e;
+      background: #1a6ef5;
       color: #fff;
     }
 
@@ -38,7 +64,7 @@
     }
 
     .sheet-table tbody tr:nth-child(odd) {
-      background: #f0fdfa;
+      background: #eff6ff;
     }
 
     .sheet-table tbody tr:nth-child(even) {
@@ -47,90 +73,7 @@
 
     .sheet-table tbody td {
       padding: .45rem .85rem;
-      border-top: 1px solid #ccfbf1;
-    }
-
-    .drop-zone {
-      border: 2px dashed #5eead4;
-      border-radius: 12px;
-      padding: 2rem;
-      text-align: center;
-      background: linear-gradient(180deg, #f0fdfa, #ffffff);
-      cursor: pointer;
-      transition: all .2s;
-      position: relative;
-    }
-
-    .drop-zone:hover,
-    .drop-zone.drag-over {
-      border-color: #0f766e;
-      background: #ecfeff;
-    }
-
-    .drop-zone input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .feature-box {
-      border-radius: 12px;
-      border: 1.5px solid #bfdbfe;
-      background: #f8fbff;
-      padding: 1rem 1.1rem;
-    }
-
-    .feature-box.teal {
-      border-color: #99f6e4;
-      background: #f0fdfa;
-    }
-
-    .feature-box h4 {
-      font-family: 'Syne', sans-serif;
-      font-size: .9rem;
-      color: #0a1628;
-      margin-bottom: .35rem;
-    }
-
-    .feature-box p {
-      font-size: .82rem;
-      color: #4b6080;
-      line-height: 1.55;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: .72rem;
-      font-weight: 700;
-    }
-
-    .tag-a {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-
-    .tag-b {
-      background: #ccfbf1;
-      color: #0f766e;
-    }
-
-    @media(max-width:760px) {
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
+      border-top: 1px solid #d0e3ff;
     }
   </style>
 </head>
@@ -143,18 +86,18 @@
       <span class="topbar-name">Painel de <span>Automações</span></span>
     </a>
     <div class="topbar-nav">
-      <a href="/">Inicio</a>
+      <a href="/">Início</a>
       <a href="/individual">Individual</a>
       <a href="/lote">Lote</a>
-      <a href="/coleta-codigo-estabelecimento" class="active">Coleta</a>
+      <a href="/coleta-codigo-estabelecimento">Coleta</a>
       <a href="/status">Status</a>
     </div>
   </nav>
 
   <div class="main-container">
     <div class="page-header">
-      <h1>Coleta Codigo Estabelecimento</h1>
-      <p>Coleta a linha desejada em Codigo Estabelecimento e consolida os contratos por situacao.</p>
+      <h1>Extrator de Dados</h1>
+      <p>Extraia dados de credenciados e consulte transações no sistema FWCard.</p>
     </div>
 
     <div class="flash-container">
@@ -171,7 +114,7 @@
       </div>
       <div class="card-body" id="cred-body">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="form-group"><label>Login</label><input type="text" id="login_infox" placeholder="Usuario Infox">
+          <div class="form-group"><label>Login</label><input type="text" id="login_infox" placeholder="Usuário Infox">
           </div>
           <div class="form-group"><label>Senha</label><input type="password" id="senha_infox" placeholder="••••••••">
           </div>
@@ -179,23 +122,22 @@
       </div>
     </div>
 
-    <form method="post" action="{{ url_for('coleta_codigo_estabelecimento') }}" enctype="multipart/form-data"
-      id="mainForm">
+    <form method="post" action="{{ url_for('extrator') }}" enctype="multipart/form-data" id="mainForm">
       <input type="hidden" id="h_login" name="login_infox">
       <input type="hidden" id="h_senha" name="senha_infox">
       <input type="hidden" name="tipo_pesquisa" id="val_tipo_pesquisa" value="COD">
 
       <div class="card">
         <div class="card-header">
-          <h5><span class="icon"><i class="bi bi-sliders"></i></span> Configuracoes da Coleta</h5>
+          <h5><span class="icon"><i class="bi bi-sliders"></i></span> Parâmetros da Extração</h5>
         </div>
         <div class="card-body">
           <div class="form-group">
-            <label>Tipo de Pesquisa</label>
+            <label>Tipo de Filtro de Entrada</label>
             <div class="toggle-group">
               <button type="button" class="toggle-btn active" data-field="tipo_pesquisa" data-value="COD"
                 onclick="selectToggle(this)">
-                <i class="bi bi-hash"></i> Codigo
+                <i class="bi bi-hash"></i> Código
               </button>
               <button type="button" class="toggle-btn" data-field="tipo_pesquisa" data-value="CNPJ"
                 onclick="selectToggle(this)">
@@ -204,24 +146,32 @@
             </div>
           </div>
 
-          <div class="form-group" style="margin-top:1rem;">
-            <label>Origem da Transacao</label>
-            <input type="text" name="origem_transacao" placeholder="Ex: CARDSE" required>
-            <div class="form-hint">O robo vai procurar a linha correspondente a essa origem para cada credenciado.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
+            <div class="form-group">
+              <label style="display:flex;align-items:center;gap:6px;text-transform:none;">
+                <input type="checkbox" name="consultas_transacoes" id="transacoesCheckbox"
+                  onchange="toggleTransacoes(this.checked)">
+                Consultar Transações (Financeiro)
+              </label>
+            </div>
+            <div class="form-group" id="funcTransacaoGroup" style="display:none;">
+              <label>Funcionalidade de Transação</label>
+              <select name="funcionalidade_transacao">
+                <option value="valor_venda_total" selected>Valor Total das Vendas</option>
+                <option value="data_ultima_transacao">Data da Última Transação</option>
+              </select>
+            </div>
           </div>
 
-          <div class="info-grid" style="margin-top:1rem;">
-            <div class="feature-box">
-              <span class="tag tag-a"><i class="bi bi-table"></i> Codigo Estabelecimento</span>
-              <h4>Coleta direcionada</h4>
-              <p>Salva Origem Transacao, Codigo Estabelecimento, Data Cadastro, Data Alteracao e Situacao apenas da
-                linha desejada.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.5rem;display:none;"
+            id="dateRangeRow">
+            <div class="form-group">
+              <label>Data Inicial</label>
+              <input type="text" name="data_inicial" placeholder="DD/MM/AAAA">
             </div>
-            <div class="feature-box teal">
-              <span class="tag tag-b"><i class="bi bi-diagram-3"></i> Contratos agrupados</span>
-              <h4>Resumo compacto</h4>
-              <p>A planilha final agrupa os contratos por situacao, conta vazios e evita listar linha a linha quando
-                todos os contratos estiverem no mesmo status.</p>
+            <div class="form-group">
+              <label>Data Final</label>
+              <input type="text" name="data_final" placeholder="DD/MM/AAAA">
             </div>
           </div>
         </div>
@@ -229,13 +179,14 @@
 
       <div class="card">
         <div class="card-header">
-          <h5><span class="icon"><i class="bi bi-file-earmark-spreadsheet-fill"></i></span> Planilha de Entrada</h5>
+          <h5><span class="icon"><i class="bi bi-file-earmark-spreadsheet-fill"></i></span> Planilha de Entrada
+            (Códigos/CNPJs)</h5>
         </div>
         <div class="card-body">
           <div class="drop-zone" id="dropZone">
-            <input type="file" name="file" id="fileInput" accept=".xlsx,.xls" onchange="showFilename(this)">
-            <div style="font-size:2rem;color:#14b8a6;margin-bottom:.5rem;"><i class="bi bi-cloud-arrow-up"></i></div>
-            <div style="font-weight:700;color:#0f766e;font-size:.95rem;">Clique para selecionar ou arraste a planilha
+            <input type="file" name="file" id="fileInput" accept=".xlsx,.xls" onchange="showFilename(this)" required>
+            <div style="font-size:2rem;color:#3d8bff;margin-bottom:.5rem;"><i class="bi bi-cloud-arrow-up"></i></div>
+            <div style="font-weight:700;color:#1a6ef5;font-size:.95rem;">Clique para selecionar ou arraste a planilha
               aqui</div>
             <div style="font-size:.8rem;color:#4b6080;margin-top:.35rem;">Formatos aceitos: .xlsx, .xls</div>
             <div id="filename-display" style="font-size:.82rem;color:#10b981;margin-top:.55rem;font-weight:600;"></div>
@@ -244,47 +195,24 @@
           <div style="margin-top:1.35rem;">
             <div
               style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:#0a1628;margin-bottom:.6rem;">
-              <i class="bi bi-info-circle-fill" style="color:#0f766e;margin-right:6px;"></i> Estrutura esperada
+              <i class="bi bi-info-circle-fill" style="color:#1a6ef5;margin-right:6px;"></i> Estrutura da Planilha
             </div>
-            <div class="sheet-wrap">
-              <table class="sheet-table">
-                <thead>
-                  <tr>
-                    <th>COD</th>
-                    <th>Observacao</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>12345</td>
-                    <td>Codigo Infox do credenciado</td>
-                  </tr>
-                  <tr>
-                    <td>04149637010753</td>
-                    <td>CNPJ quando o tipo de pesquisa for CNPJ</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="alert alert-info" style="margin-top:.75rem;font-size:.82rem;">
-              <i class="bi bi-save2"></i>
-              A automacao salva a planilha parcial a cada 10 credenciados processados e registra nos logs onde houve
-              erro ou interrupcao.
-            </div>
+            <p style="font-size:.85rem;color:#4b6080;margin-bottom:.5rem;">A planilha deve conter uma coluna <b>COD</b>
+              contendo os códigos ou CNPJs dos quais deseja extrair informações.</p>
           </div>
         </div>
       </div>
 
       <div style="display:flex;gap:.75rem;">
         <button type="submit" class="btn btn-primary btn-lg" style="flex:1;">
-          <i class="bi bi-play-fill"></i> Iniciar Coleta
+          <i class="bi bi-play-fill"></i> Iniciar Extração
         </button>
         <a href="/" class="btn btn-secondary btn-lg"><i class="bi bi-arrow-left"></i> Voltar</a>
       </div>
     </form>
   </div>
 
-  <footer>Painel de Automações - Megavale © 2026</footer>
+  <footer>Painel de Automações — Megavale © 2026</footer>
 
   <script>
     function toggleCard(b, i) {
@@ -299,6 +227,18 @@
       document.querySelectorAll(`[data-field="${field}"]`).forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById(`val_${field}`).value = btn.dataset.value;
+    }
+
+    function toggleTransacoes(checked) {
+      const funcGroup = document.getElementById('funcTransacaoGroup');
+      const dateRow = document.getElementById('dateRangeRow');
+      if (checked) {
+        funcGroup.style.display = 'block';
+        dateRow.style.display = 'grid';
+      } else {
+        funcGroup.style.display = 'none';
+        dateRow.style.display = 'none';
+      }
     }
 
     function showFilename(input) {

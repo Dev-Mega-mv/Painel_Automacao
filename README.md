@@ -1,4 +1,4 @@
-# Ativador Pro - Megavale
+# Painel de Automações - Megavale
 
 Aplicacao web em Flask para automatizar ativacao, desativacao, verificacao e coleta de dados de credenciados nas tecnologias CIELO e CARDSE.
 
