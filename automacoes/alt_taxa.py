@@ -113,7 +113,12 @@ class WebAppAlteradorTaxa:
             opts.add_argument("--disable-extensions")
             opts.add_argument("--disable-popup-blocking")
             opts.add_argument("--disable-blink-features=AutomationControlled")
-            opts.binary_location = r"C:\BACKUP_EMANUEL\Program Files\Google\Chrome\Application\chrome.exe"
+            chrome_binary = os.environ.get("CHROME_BINARY_PATH", "").strip()
+            fallback_chrome_binary = r"C:\BACKUP_EMANUEL\Program Files\Google\Chrome\Application\chrome.exe"
+            if chrome_binary:
+                opts.binary_location = chrome_binary
+            elif os.path.exists(fallback_chrome_binary):
+                opts.binary_location = fallback_chrome_binary
             self.driver  = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=opts)
             self.wait    = WebDriverWait(self.driver, 15)
             self.actions = ActionChains(self.driver)

@@ -133,7 +133,7 @@ class WebAppExtrator:
             "campo_detalhe_data_cadastro": '//*[@id="P2101_DATA_CADASTRO"]',
             "menu_consulta_principal": '//*[@id="t_MenuNav_11i"]',
             "menu_consulta_secundario": '//*[@id="t_MenuNav_11_2"]',
-            "menu_consulta_transacoes": '//*[@id="t_MenuNav_11_2_2"]',
+            "menu_consulta_transacoes": '//*[@id="t_MenuNav_11_2_1"]',
             "campo_transacao_data_inicial": '//*[@id="P5320_DATA_INICIAL_input"]',
             "campo_transacao_data_final": '//*[@id="P5320_DATA_FINAL_input"]',
             "campo_transacao_codigo": '//*[@id="P5320_CREDENCIADO_PESQ"]',
