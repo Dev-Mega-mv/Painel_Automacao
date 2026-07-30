@@ -133,7 +133,7 @@ class WebAppExtrator:
             "campo_detalhe_data_cadastro": '//*[@id="P2101_DATA_CADASTRO"]',
             "menu_consulta_principal": '//*[@id="t_MenuNav_11i"]',
             "menu_consulta_secundario": '//*[@id="t_MenuNav_11_2"]',
-            "menu_consulta_transacoes": '//*[@id="t_MenuNav_11_2_2"]',
+            "menu_consulta_transacoes": '//*[@id="t_MenuNav_11_2_1"]',
             "campo_transacao_data_inicial": '//*[@id="P5320_DATA_INICIAL_input"]',
             "campo_transacao_data_final": '//*[@id="P5320_DATA_FINAL_input"]',
             "campo_transacao_codigo": '//*[@id="P5320_CREDENCIADO_PESQ"]',
@@ -815,7 +815,7 @@ class WebAppExtrator:
         }
 
     def _processar_consultas_transacoes(self):
-        consultas = self.filtros.get("consultas_transacoes", []) or []
+        consultas = self.filtros.get("consultas_transacoes_list") or []
         extraction_status["total"] = len(consultas)
         self.add_log(f"Total de consultas de transacoes: {len(consultas)}")
 
@@ -989,7 +989,7 @@ class WebAppExtrator:
             self._iniciar_driver()
             self._realizar_login()
             self.add_log("Aguardando carregamento da pagina inicial...")
-            time.sleep(2)
+            time.sleep(4)
 
             if self.modo_consulta_transacoes:
                 if not self._navegar_para_consulta_transacoes():

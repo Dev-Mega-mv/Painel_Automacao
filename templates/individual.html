@@ -364,7 +364,7 @@
 
           <!-- Ação AMBOS -->
           <div id="acao-ambos" class="acao-grid acao-section">
-            <div class="acao-box">
+            <div class="acao-box" data-acao-tec="cielo">
               <div class="acao-box-title"><span class="dot dot-cielo"></span> CIELO</div>
               <div class="acao-toggle">
                 <button type="button" class="acao-btn ativar active" onclick="setAcao('cielo','ATIVAR',this)">
@@ -375,7 +375,7 @@
                 </button>
               </div>
             </div>
-            <div class="acao-box">
+            <div class="acao-box" data-acao-tec="cardse">
               <div class="acao-box-title"><span class="dot dot-cardse"></span> CARDSE</div>
               <div class="acao-toggle">
                 <button type="button" class="acao-btn ativar active" onclick="setAcao('cardse','ATIVAR',this)">
@@ -433,16 +433,15 @@
     }
 
     function setAcao(tec, valor, btn) {
-      document.querySelectorAll(`.acao-btn.ativar`).forEach(b => {
-        if (b.closest(`#acao-${tec}-simples, #acao-ambos`)) b.classList.remove('active');
-      });
-      document.querySelectorAll(`.acao-btn.desativar`).forEach(b => {
-        if (b.closest(`#acao-${tec}-simples, #acao-ambos`)) b.classList.remove('active');
-      });
+      const containers = [
+        document.querySelector(`#acao-${tec}-simples`),
+        document.querySelector(`#acao-ambos [data-acao-tec="${tec}"]`)
+      ].filter(Boolean);
       const classe = valor === 'ATIVAR' ? 'ativar' : 'desativar';
-      [`#acao-${tec}-simples`, `#acao-ambos`].forEach(sel => {
-        const container = document.querySelector(sel);
-        if (container) { const b = container.querySelector(`.acao-btn.${classe}`); if (b) b.classList.add('active'); }
+      containers.forEach(container => {
+        container.querySelectorAll('.acao-btn').forEach(b => b.classList.remove('active'));
+        const b = container.querySelector(`.acao-btn.${classe}`);
+        if (b) b.classList.add('active');
       });
       document.getElementById(`val_acao_${tec}`).value = valor;
     }

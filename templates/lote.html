@@ -548,7 +548,7 @@
 
           <!-- Ação AMBOS -->
           <div id="acao-ambos" class="acao-grid acao-section">
-            <div class="acao-box">
+            <div class="acao-box" data-acao-tec="cielo">
               <div class="acao-box-title"><span class="dot dot-cielo"></span> CIELO</div>
               <div class="acao-toggle">
                 <button type="button" class="acao-btn ativar active" onclick="setAcao('cielo','ATIVAR',this)"><i
@@ -557,7 +557,7 @@
                     class="bi bi-x-circle"></i> Desativar</button>
               </div>
             </div>
-            <div class="acao-box">
+            <div class="acao-box" data-acao-tec="cardse">
               <div class="acao-box-title"><span class="dot dot-cardse"></span> CARDSE</div>
               <div class="acao-toggle">
                 <button type="button" class="acao-btn ativar active" onclick="setAcao('cardse','ATIVAR',this)"><i
@@ -709,8 +709,10 @@
       document.getElementById(`val_${field}`).value = btn.dataset.value;
     }
     function setAcao(tec, valor, btn) {
-      [`#acao-${tec}-simples`, `#acao-ambos`].forEach(sel => {
-        const c = document.querySelector(sel); if (!c) return;
+      [
+        document.querySelector(`#acao-${tec}-simples`),
+        document.querySelector(`#acao-ambos [data-acao-tec="${tec}"]`)
+      ].filter(Boolean).forEach(c => {
         c.querySelectorAll('.acao-btn').forEach(b => b.classList.remove('active'));
         const t = c.querySelector(`.acao-btn.${valor === 'ATIVAR' ? 'ativar' : 'desativar'}`); if (t) t.classList.add('active');
       });

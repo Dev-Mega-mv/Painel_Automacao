@@ -1,0 +1,206 @@
+
+--- 2026-07-30 09:29:59.701220 ---
+Erro critico
+Message: element click intercepted: Element <span>...</span> is not clickable at point (1045, 658). Other element would receive the click: <td align="right">...</td>
+  (Session info: chrome=144.0.7559.97); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0x1005093
+	0x10050d4
+	0xdfb490
+	0xe4bfd8
+	0xe4a1e9
+	0xe47ba2
+	0xe46db4
+	0xe3b4f8
+	0xe681bc
+	0xe3af34
+	0xe68384
+	0xe85341
+	0xe67f56
+	0xe396c9
+	0xe3a484
+	0x1257e34
+	0x12530c9
+	0x1270add
+	0x101db38
+	0x10258ad
+	0x100d848
+	0x100da12
+	0xff75fa
+	0x753f5d49
+	0x7796e00b
+	0x7796df91
+
+Traceback (most recent call last):
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 990, in iniciar
+    self._realizar_login()
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 257, in _realizar_login
+    self._click(botao)
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 271, in _click
+    el.click()
+  File "C:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\.venv\Lib\site-packages\selenium\webdriver\remote\webelement.py", line 114, in click
+    self._execute(Command.CLICK_ELEMENT)
+  File "C:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\.venv\Lib\site-packages\selenium\webdriver\remote\webelement.py", line 508, in _execute
+    return self._parent.execute(command, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\.venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 446, in execute
+    self.error_handler.check_response(response)
+  File "C:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\.venv\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.ElementClickInterceptedException: Message: element click intercepted: Element <span>...</span> is not clickable at point (1045, 658). Other element would receive the click: <td align="right">...</td>
+  (Session info: chrome=144.0.7559.97); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0x1005093
+	0x10050d4
+	0xdfb490
+	0xe4bfd8
+	0xe4a1e9
+	0xe47ba2
+	0xe46db4
+	0xe3b4f8
+	0xe681bc
+	0xe3af34
+	0xe68384
+	0xe85341
+	0xe67f56
+	0xe396c9
+	0xe3a484
+	0x1257e34
+	0x12530c9
+	0x1270add
+	0x101db38
+	0x10258ad
+	0x100d848
+	0x100da12
+	0xff75fa
+	0x753f5d49
+	0x7796e00b
+	0x7796df91
+
+
+--- 2026-07-30 09:32:35.819148 ---
+Erro ao navegar para tela de consulta de transacoes
+Message: Tela de consulta de transacoes nao carregou
+
+Traceback (most recent call last):
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 548, in _navegar_para_consulta_transacoes
+    raise TimeoutException("Tela de consulta de transacoes nao carregou")
+selenium.common.exceptions.TimeoutException: Message: Tela de consulta de transacoes nao carregou
+
+
+--- 2026-07-30 09:32:35.824178 ---
+Erro critico
+Nao foi possivel abrir a tela de consulta de transacoes
+Traceback (most recent call last):
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 996, in iniciar
+    raise RuntimeError("Nao foi possivel abrir a tela de consulta de transacoes")
+RuntimeError: Nao foi possivel abrir a tela de consulta de transacoes
+
+--- 2026-07-30 09:59:58.858439 ---
+Erro critico
+object of type 'bool' has no len()
+Traceback (most recent call last):
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 997, in iniciar
+    self._processar_consultas_transacoes()
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 819, in _processar_consultas_transacoes
+    extraction_status["total"] = len(consultas)
+                                 ^^^^^^^^^^^^^^
+TypeError: object of type 'bool' has no len()
+
+--- 2026-07-30 10:05:33.151040 ---
+Erro critico
+object of type 'bool' has no len()
+Traceback (most recent call last):
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 997, in iniciar
+    self._processar_consultas_transacoes()
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 819, in _processar_consultas_transacoes
+    extraction_status["total"] = len(consultas)
+                                 ^^^^^^^^^^^^^^
+TypeError: object of type 'bool' has no len()
+
+--- 2026-07-30 10:14:28.538033 ---
+Erro na consulta de transacoes do codigo 12777
+Message: Resultado da ultima transacao nao carregou a tempo
+
+Traceback (most recent call last):
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 843, in _processar_consultas_transacoes
+    dados = self._consultar_transacoes_item(consulta)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 805, in _consultar_transacoes_item
+    return self._consultar_data_ultima_transacao(codigo, data_inicial, data_final)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 774, in _consultar_data_ultima_transacao
+    data_ultima = self._aguardar_data_ultima_transacao(timeout=60)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 744, in _aguardar_data_ultima_transacao
+    raise TimeoutException("Resultado da ultima transacao nao carregou a tempo")
+selenium.common.exceptions.TimeoutException: Message: Resultado da ultima transacao nao carregou a tempo
+
+
+--- 2026-07-30 10:14:53.904774 ---
+Erro na consulta de transacoes do codigo 12785
+Message: 
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0xe05093
+	0xe050d4
+	0xbfb490
+	0xc458da
+	0xc45b7b
+	0xc87b42
+	0xc68204
+	0xc85341
+	0xc67f56
+	0xc396c9
+	0xc3a484
+	0x1057e34
+	0x10530c9
+	0x1070add
+	0xe1db38
+	0xe258ad
+	0xe0d848
+	0xe0da12
+	0xdf75fa
+	0x753f5d49
+	0x7796e00b
+	0x7796df91
+
+Traceback (most recent call last):
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 843, in _processar_consultas_transacoes
+    dados = self._consultar_transacoes_item(consulta)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 805, in _consultar_transacoes_item
+    return self._consultar_data_ultima_transacao(codigo, data_inicial, data_final)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\automacoes\extrator.py", line 759, in _consultar_data_ultima_transacao
+    self.wait.until(
+  File "C:\BACKUP_EMANUEL\Repositórios\Ativar_Card_CieloSUP\.venv\Lib\site-packages\selenium\webdriver\support\wait.py", line 121, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message: 
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0xe05093
+	0xe050d4
+	0xbfb490
+	0xc458da
+	0xc45b7b
+	0xc87b42
+	0xc68204
+	0xc85341
+	0xc67f56
+	0xc396c9
+	0xc3a484
+	0x1057e34
+	0x10530c9
+	0x1070add
+	0xe1db38
+	0xe258ad
+	0xe0d848
+	0xe0da12
+	0xdf75fa
+	0x753f5d49
+	0x7796e00b
+	0x7796df91
+

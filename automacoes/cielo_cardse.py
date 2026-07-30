@@ -20,6 +20,7 @@ import traceback
 import random
 import time
 import os
+import unicodedata
 
 automation_status = {
     'running': False,
@@ -71,6 +72,12 @@ def _normalizar_status_contrato(valor):
     if not valor:
         return 'DESATIVADO'
     return valor.upper()
+
+
+def _normalizar_texto_menu(valor):
+    valor = unicodedata.normalize('NFKD', valor or '')
+    valor = ''.join(ch for ch in valor if not unicodedata.combining(ch))
+    return re.sub(r'\s+', ' ', valor).strip().upper()
 
 
 def _ordenar_status_contrato(chave):
@@ -613,6 +620,41 @@ class WebAppAtivador:
             raise ultimo_erro
         raise TimeoutException(f"Clique falhou: {descricao}")
 
+    def _click_elemento_robusto(self, el, descricao):
+        el = self._elemento_clicavel_mais_proximo(el)
+        try:
+            self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", el)
+        except Exception:
+            pass
+        try:
+            ActionChains(self.driver).move_to_element(el).pause(.2).click(el).perform()
+            time.sleep(.2)
+            return
+        except Exception:
+            pass
+        try:
+            self.driver.execute_script(
+                "arguments[0].dispatchEvent(new MouseEvent('mousedown', {bubbles:true}));"
+                "arguments[0].dispatchEvent(new MouseEvent('mouseup', {bubbles:true}));"
+                "arguments[0].dispatchEvent(new MouseEvent('click', {bubbles:true}));",
+                el
+            )
+            time.sleep(.2)
+            return
+        except Exception:
+            pass
+        self.driver.execute_script("arguments[0].click();", el)
+        time.sleep(.2)
+
+    def _elemento_clicavel_mais_proximo(self, el):
+        try:
+            clicavel = el.find_element(By.XPATH, './ancestor-or-self::*[self::a or self::button or self::li or @role="menuitem" or @onclick][1]')
+            if clicavel:
+                return clicavel
+        except Exception:
+            pass
+        return el
+
     def _aguardar_elemento_visivel(self, xpath, descricao, timeout=8):
         fim = time.time() + timeout
         ultimo_erro = None
@@ -658,23 +700,50 @@ class WebAppAtivador:
             raise ultimo_erro
         raise TimeoutException(f"Elemento nao encontrado: {descricao}")
 
-    def _achar_item_menu_visivel(self, textos, timeout=8):
+    def _achar_item_menu_visivel(self, textos, timeout=8, raiz_id=None):
         if isinstance(textos, str):
             textos = [textos]
+        textos_norm = [_normalizar_texto_menu(texto) for texto in textos]
         fim = time.time() + timeout
         while time.time() < fim:
-            for texto in textos:
-                xpath = (
-                    "//*[(self::span or self::a or self::div)"
-                    f" and contains(normalize-space(.), \"{texto}\")]"
-                )
-                try:
-                    elementos = self.driver.find_elements(By.XPATH, xpath)
-                    for el in elementos:
-                        if el.is_displayed() and el.size.get('height', 0) > 0 and el.size.get('width', 0) > 0:
-                            return el
-                except Exception:
-                    pass
+            try:
+                escopo = f"//*[@id='{raiz_id}']" if raiz_id else ""
+                elementos = self.driver.find_elements(By.XPATH, f"{escopo}//*[self::span or self::a or self::div or self::button or self::li or @role='menuitem']")
+                for el in elementos:
+                    if not (el.is_displayed() and el.size.get('height', 0) > 0 and el.size.get('width', 0) > 0):
+                        continue
+                    texto_el = _normalizar_texto_menu(self._texto_elemento(el))
+                    if texto_el and any(texto in texto_el for texto in textos_norm):
+                        return el
+            except Exception:
+                pass
+            try:
+                el = self.driver.execute_script("""
+                    const alvos = arguments[0];
+                    const norm = (s) => (s || '')
+                        .normalize('NFD')
+                        .replace(/[\\u0300-\\u036f]/g, '')
+                        .replace(/\\s+/g, ' ')
+                        .trim()
+                        .toUpperCase();
+                    const visivel = (el) => {
+                        const st = getComputedStyle(el);
+                        const r = el.getBoundingClientRect();
+                        return st.display !== 'none' && st.visibility !== 'hidden' && r.width > 0 && r.height > 0;
+                    };
+                    const root = arguments[1] ? document.getElementById(arguments[1]) : document;
+                    if (!root) return null;
+                    for (const el of root.querySelectorAll('a,button,li,span,div,[role="menuitem"]')) {
+                        if (!visivel(el)) continue;
+                        const txt = norm(el.innerText || el.textContent);
+                        if (txt && alvos.some(alvo => txt.includes(alvo))) return el;
+                    }
+                    return null;
+                """, textos_norm, raiz_id)
+                if el:
+                    return el
+            except Exception:
+                pass
             time.sleep(0.2)
         raise TimeoutException(f"Item de menu nao encontrado: {textos}")
 
@@ -707,16 +776,16 @@ class WebAppAtivador:
 
         self.add_log("[COLETA] Clicando em Cadastro...")
         self._click_xpath_robusto('//*[@id="CREDENCIADO_MENU_menu_1i"] | //*[@id="CREDENCIADO_MENU_menu_1"]', "Cadastro", timeout=10)
-        self._aguardar_elemento_visivel(
-            '//*[@id="CREDENCIADO_MENU_menu_1_2i"] | //*[@id="CREDENCIADO_MENU_menu_1_2"]',
-            "submenu Codigo Estabelecimento apos clicar em Cadastro",
-            timeout=5
+        item_codigo = self._achar_item_menu_visivel(
+            'CODIGO ESTABELECIMENTO',
+            timeout=10,
+            raiz_id='CREDENCIADO_MENU'
         )
         self.add_log("[COLETA] Submenu Cadastro aberto com sucesso.")
         time.sleep(0.2)
 
         self.add_log("[COLETA] Clicando em Codigo Estabelecimento...")
-        self._click_xpath_robusto('//*[@id="CREDENCIADO_MENU_menu_1_2i"] | //*[@id="CREDENCIADO_MENU_menu_1_2"]', "Codigo Estabelecimento", timeout=10)
+        self._click_elemento_robusto(item_codigo, "Codigo Estabelecimento")
         time.sleep(0.2)
 
     # ── Fluxo principal ───────────────────────────────────────

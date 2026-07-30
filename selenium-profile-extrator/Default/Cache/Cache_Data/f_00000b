@@ -1,0 +1,1955 @@
+var g_alerta_title = 'Alerta';
+var g_confirm_title = 'Confirmação';
+
+//SET CURSOR POSITION
+//$.fn.setCursorPosition = function (pos) {
+//  this.each(function (index, elem) {
+//    if (elem.setSelectionRange) {
+//      elem.setSelectionRange(pos, pos);
+//    } else if (elem.createTextRange) {
+//      var range = elem.createTextRange();
+//      range.collapse(true);
+//      range.moveEnd('character', pos);
+//      range.moveStart('character', pos);
+//      range.select();
+//    }
+//  });
+//  return this;
+//};
+
+/* Função para menu de ficha */
+function MostraMenu(pThis, pMenu) {
+  var bot = $x(pThis);
+  var nmenu = 'menu_ficha' + pMenu;
+  var menu = document.getElementById(nmenu);
+
+  menu.style.top = (parseInt(findPosY(bot) + parseInt(bot.offsetHeight, 10), 10) + 3) + 'px';
+  menu.style.left = parseInt(findPosX(bot), 10) + 'px';
+  menu.style.zIndex = 100;
+  menu.style.position = 'absolute';
+
+  html_ToggleElement(nmenu);
+}
+
+//function findPosY(a) { return apex.jQuery(a).offset().top }
+
+//function findPosX(a) { return apex.jQuery(a).offset().left }
+
+/* Função do novo menu opções para exibir submenus alinhados a direita corretamente */
+function fw_app_AppMenuMultiOpenBottom2(a, b, c) { var d = $x(b); if (a != gCurrentAppMenuImage) { app_AppMenuMultiClose(); var e = a.parentNode; a.className = g_dhtmlMenuOn, fw_dhtml_MenuOpen(e, b, !1, 'Bottom', a), gCurrentAppMenuImage = a } else { dhtml_CloseAllSubMenus(); app_AppMenuMultiClose(); return }}
+
+function fw_dhtml_MenuOpen(a, b, c, d, e) { var f=null; if ($x(b)) { f = 'menu_keys_' + b, document.onclick = dhtml_DocMenuCheck, apex.jQuery(document).unbind('keydown.' + f + '_esc').bind('keydown.' + f + '_esc', function (a) { a.which === 27 && (app_AppMenuMultiClose(), dhtml_CloseAllSubMenus(), document.onclick = null, e && apex.jQuery(e).focus()) }); if (!c) dhtml_CloseAllSubMenus(), gCurrentAppMenu = b; else { var g = parseInt($x(b).getAttribute('htmldb:listlevel'), 10), h = gSubMenuArray[g]; h && $x_Hide(h), gSubMenuArray[g] = $x(b) } $gCurrentAnchorList = apex.jQuery('#' + b).children().children().filter('a[class!=eLink]'), apex.jQuery(document).unbind('keydown.' + f).bind('keydown.' + f, function (a) { var c = [40, 38, 37, 39, 13]; apex.jQuery('#' + b + ':visible').filter('ul')[0] && apex.jQuery.inArray(a.which, c) !== -1 && dhtml_KeyAction(a, f) }); var i = $x(b); document.body.appendChild(i), !d || d == 'Right' ? (i.style.position = 'absolute', i.style.top = parseInt(apex.jQuery(a).offset().top, 10) + 'px', i.style.left = (parseInt(findPosX(a), 10) - (parseInt(a.offsetWidth, 10) - 1)) + 'px') : d == 'Bottom' ? (i.style.position = 'absolute', i.style.top = parseInt(findPosY(a), 10) + parseInt(a.offsetHeight, 10) + 'px', i.style.left = (parseInt(findPosX(a), 10) - (parseInt(a.offsetWidth, 10) - 6)) + 'px') : d == 'BottomRight' ? (i.style.position = 'absolute', i.style.top = parseInt(apex.jQuery(a).offset().top, 10) + parseInt(a.offsetHeight, 10) + 'px', i.style.left = parseInt(findPosX(a), 10) - parseInt(a.offsetWidth, 10) + 'px') : (i.style.position = 'absolute', i.style.top = parseInt(apex.jQuery(a).offset().top, 10) + 'px', i.style.left = parseInt(findPosX(a), 10) + parseInt(a.offsetWidth, 10) + 'px'), $x_Show(i), dhtml_FixLeft(a, i, d), htmldb_IE_Select_Item_Fix(i) } return }
+
+function dhtml_MenuOpen(a, b, c, d, e) { var f=null; if ($x(b)) { f = 'menu_keys_' + b, document.onclick = dhtml_DocMenuCheck, apex.jQuery(document).unbind('keydown.' + f + '_esc').bind('keydown.' + f + '_esc', function (a) { a.which === 27 && (app_AppMenuMultiClose(), dhtml_CloseAllSubMenus(), document.onclick = null, e && apex.jQuery(e).focus()) }); if (!c) dhtml_CloseAllSubMenus(), gCurrentAppMenu = b; else { var g = parseInt($x(b).getAttribute('htmldb:listlevel'), 10), h = gSubMenuArray[g]; h && $x_Hide(h), gSubMenuArray[g] = $x(b) } $gCurrentAnchorList = apex.jQuery('#' + b).children().children().filter('a[class!=eLink]'), apex.jQuery(document).unbind('keydown.' + f).bind('keydown.' + f, function (a) { var c = [40, 38, 37, 39, 13]; apex.jQuery('#' + b + ':visible').filter('ul')[0] && apex.jQuery.inArray(a.which, c) !== -1 && dhtml_KeyAction(a, f) }); var i = $x(b); document.body.appendChild(i), !d || d == 'Right' ? (i.style.position = 'fixed', i.style.top = parseInt(apex.jQuery(a).offset().top, 10) + 'px', i.style.left = (parseInt(findPosX(a), 10) - (parseInt(a.offsetWidth, 10) - 1)) + 'px') : d == 'Bottom' ? (i.style.position = 'fixed', i.style.top = (parseInt(findPosY(a), 10) + parseInt(a.offsetHeight, 10) - 2) + 'px', i.style.left = (parseInt(findPosX(a), 10) + 5) + 'px') : d == 'BottomRight' ? (i.style.position = 'fixed', i.style.top = parseInt(apex.jQuery(a).offset().top, 10) + parseInt(a.offsetHeight, 10) + 'px', i.style.left = parseInt(findPosX(a), 10) - parseInt(a.offsetWidth, 10) + 'px') : (i.style.position = 'fixed', i.style.top = parseInt(apex.jQuery(a).offset().top, 10) + 'px', i.style.left = parseInt(findPosX(a), 10) + parseInt(a.offsetWidth, 10) + 'px'), $x_Show(i), dhtml_FixLeft(a, i, d), htmldb_IE_Select_Item_Fix(i) } return }
+
+/* funções utilizadas para abrir e fechar form dialog modal */
+function fwAbrirDialog(region) {
+  $('#' + region).parent().css('width', 'auto');
+
+  v_dtop = $(document).height() / 2;
+  v_dleft = $(document).width() / 2;
+
+  v_dheight = $('#' + region).parent().height();
+  v_dwidth = $('#' + region).parent().width();
+
+  if (v_dheight < 150) {
+    v_dheight = 150;
+    $('#' + region).parent().css('height', v_dheight);
+  }
+
+  if (v_dwidth < 450) {
+    v_dwidth = 450;
+    $('#' + region).parent().css('width', v_dwidth);
+  }
+
+  v_dtop -= (v_dheight / 2);
+  v_dleft -= (v_dwidth / 2);
+
+  $('#' + region).parent().css('top', v_dtop);
+  $('#' + region).parent().css('left', v_dleft);
+
+  $('#' + region + '_CONTENT').css('height', v_dheight - 46);
+
+  $('#modalBackground').show();
+  $('#modalBackground').css('z-index', '99999990');
+
+  $('#' + region).parent().show();
+  $('#' + region).parent().css('z-index', '99999991');
+}
+
+function fwFecharDialog(region) {
+  $('#' + region).parent().hide();
+  $('#modalBackground').hide();
+}
+
+/* funcao utilizadas para abrir form dialog modal por url*/
+function fwAbrirDialogUrl(pUrlDialog, pWidth, pHeight, pTitle) {
+  /* Trigger JQuery UI dialog */
+  var horizontalPadding = 30;
+  var verticalPadding = 30;
+  var dialog = $('<iframe id="modalDialog" src="' + pUrlDialog + '" frameborder="no" />').dialog({
+    title: pTitle,
+    autoOpen: true,
+    width: pWidth,
+    height: pHeight,
+    modal: true,
+    draggable: true,
+    resizable: true,
+    close: function (event, ui) { },
+    overlay: {
+      opacity: 0.2,
+      background: 'black'
+    }
+  });
+
+  dialog.width(pWidth).height(pHeight);
+
+  // Posiciona Dialog
+  v_dtop = $(document).height() / 2;
+  v_dleft = $(document).width() / 2;
+
+  v_dheight = dialog.parent().height();
+  v_dwidth = dialog.parent().width();
+
+  v_dtop -= (v_dheight / 2);
+  v_dleft -= (v_dwidth / 2);
+
+  dialog.parent().css('top', v_dtop);
+  dialog.parent().css('left', v_dleft);
+
+  $('.ui-widget-overlay.ui-front').css('z-index', '99999990');
+
+  dialog.parent().css('z-index', '99999991');
+
+  return dialog;
+}
+
+function fwRedirecionaFechaDialogUrl(pUrl) {
+  window.parent.location.href = pUrl;
+  window.parent.$('.ui-dialog-content:visible').dialog('close');
+}
+
+function dhtml_ShuttleObject(a, b) {
+  //a=$x('apexir_SHUTTLE_LEFT');
+  //b=$x('apexir_SHUTTLE_RIGHT');
+  this.Select1 = $x(a),
+    this.Select2 = $x(b),
+    this.Select1ArrayInit = this.Select1.cloneNode(!0),
+    this.Select2ArrayInit = this.Select2.cloneNode(!0),
+    this.Op1Init = [],
+    this.Op2Init = [],
+    this.Op1Init = this.Select1ArrayInit.options,
+    this.Op2Init = this.Select2ArrayInit.options,
+    this.move = function () {
+      var a = $f_SelectedOptions(this.Select1);
+      $x(a) && (a = [a]);
+      var b = a.length;
+      for (var c = 0; c < b; c++)
+        this.Select2.appendChild(a[c])
+    }
+    , this.remove = function () {
+      var a = $f_SelectedOptions(this.Select2);
+      $x(a) && (a = [a]);
+      var b = a.length;
+      for (var c = 0; c < b; c++)
+        this.Select1.appendChild(a[c])
+    }
+    , this.reset = function () {
+      this.Select1.options.length = 0, this.Select2.options.length = 0;
+      var a = this.Op1Init.length;
+      for (var b = 0; b < a; b++) {
+        if (this.Op1Init[b].value != 'CHECKBOX') {
+          this.Select1.options[b] = new Option(this.Op1Init[b].text, this.Op1Init[b].value);
+        } else {
+          this.Select1.options[b] = new Option(this.Op1Init[b].value, this.Op1Init[b].value);
+        }
+      }
+      var c = this.Op2Init.length;
+      for (var d = 0; d < c; d++) {
+        if (this.Op2Init[d].value != 'CHECKBOX' && this.Op2Init[d].text != null && this.Op2Init[d].text != undefined && this.Op2Init[d].text != '') {
+          this.Select2.options[d] = new Option(this.Op2Init[d].text, this.Op2Init[d].value);
+        } else {
+          this.Select2.options[d] = new Option(this.Op2Init[d].value, this.Op2Init[d].value);
+        }
+      }
+    }
+    , this.move_all = function () {
+      for (var a = 0, b = this.Select1.options.length; a < b; a++)
+        this.Select1.options[a].selected = !0;
+      this.move()
+    }
+    , this.remove_all = function () {
+      for (var a = 0, b = this.Select2.options.length; a < b; a++)
+        this.Select2.options[a].selected = !0;
+      this.remove()
+    }
+    , this.sort = function (a, b) {
+      var c, d, e = a.options.length;
+      if (b == 'U')
+        for (d = 0; d < e; d++)!a.options[d].selected || b == 'U' && (!d || a.insertBefore(a.options[d], a.options[d - 1]));
+      else if (b == 'D')
+        for (d = e - 1; d >= 0; d--)!a.options[d].selected || b == 'D' && d != e - 1 && a.insertBefore(a.options[d], a.options[d + 2]);
+      else {
+        var f = [];
+        for (d = 0; d < e; d++)!a.options[d].selected || (f[f.length] = a.options[d]);
+        if (b == 'B')
+          for (d = 0; d < f.length; d++)a.appendChild(f[d]);
+        else if (b == 'T')
+          for (d = f.length - 1; d >= 0; d--)
+            a.insertBefore(f[d], a.firstChild)
+      }
+    }
+    , this.sort1 = function (a) {
+      this.sort(this.Select1, a)
+    }
+    , this.sort2 = function (a) {
+      this.sort(this.Select2, a)
+    };
+  apex.jQuery('#apexir_SHUTTLE_RIGHT>option:first').change();
+  return
+}
+
+/* Função usada para formatar a data no evento OnKeyPress */
+function mascara_data2(pthis, event) {
+  chCode = ('charCode' in event) ? event.charCode : event.keyCode;
+  v_tam = pthis.value;
+  if (v_tam.length == 2 && chCode != '47') { pthis.value += '/'; }
+  if (v_tam.length == 5 && chCode != '47') { pthis.value += '/'; }
+}
+
+/* Função usada para formatar mês e ano no evento OnKeyPress */
+function mascara_mes_ano(pthis, event) {
+  chCode = ('charCode' in event) ? event.charCode : event.keyCode;
+  v_tam = pthis.value;
+  if (v_tam.length == 2 && chCode != '47') { pthis.value += '/'; }
+}
+
+
+function retiraMascara(ObjCPF) {
+    return ObjCPF.value.replace(/\D/g, '');
+}
+
+/* Função de validar mascara generica #61762 */
+function mascarar_documento(pThis, pItem) {
+
+  switch (document.getElementById(pItem).value) {
+    case 'F':
+      pThis.maxLength = 14;
+      mascara_cpf(pThis);
+      break;
+    case 'J':
+      pThis.maxLength = 18;
+      mascara_cnpj(pThis);
+      break;
+    case 'E':
+      pThis.maxLength = 15;
+      mascara_cei(pThis);
+      break;
+    default:
+      return;
+  }
+
+}
+
+function mascararDocProposta(pThis, pItem) {
+
+  switch (document.getElementById(pItem).value) {
+    case 'F':
+      pThis.maxLength = 14;
+      mascara_cpf(pThis);
+      break;
+    case 'O':
+      pThis.maxLength = 11;
+      retiraMascara(pThis);
+      break;
+    default:
+      return;
+  }
+
+}
+
+function exec_download(p_nomearq) {
+  window.open(p_nomearq);
+}
+
+/* Mensagem de confirmação */
+function msg_confirmar(pThis, pTitulo, pMsg, pBotao, pIcone, pNao) {
+  var vBotao, vIcone;
+  if (pBotao == 'SNC') vBotao = Ext.MessageBox.YESNOCANCEL;
+  if (pBotao == 'SN') vBotao = Ext.MessageBox.YESNO;
+  if (pBotao == 'O') vBotao = Ext.MessageBox.OK;
+  if (pBotao == 'O_SB') vBotao = Ext.MessageBox.OK; // OK c/ submissao
+  if (pBotao == 'OC') vBotao = Ext.MessageBox.OKCANCEL;
+  if (vBotao == null) vBotao = Ext.MessageBox.YESNOCANCEL;
+
+  if (pIcone == 'P') vIcone = Ext.MessageBox.QUESTION;
+  if (pIcone == 'E') vIcone = Ext.MessageBox.ERROR;
+  if (pIcone == 'I') vIcone = Ext.MessageBox.INFO;
+  if (pIcone == 'A') vIcone = Ext.MessageBox.WARNING;
+  if (pIcone == 'D') vIcone = 'ext-mb-download';
+
+  Ext.onReady(function () {
+    Ext.MessageBox.show({
+      title: pTitulo,
+      msg: pMsg,
+      buttons: vBotao,
+      fn: Retorno,
+      animEl: pThis,
+      icon: vIcone
+    });
+
+    function Retorno(btn) {
+      if ((btn == 'ok' || btn == 'yes') && pBotao != 'O') {
+        doSubmit(pThis);
+      } else {
+        if (pNao != null) doSubmit(pNao);
+      }
+    };
+
+  });
+};
+
+/* Mensagem de confirma��o para telas que precisam executar a��es On Demand */
+function msg_confirmar_on_demand(pThis, pTitulo, pMsg, pBotao, pIcone) {
+
+  var vBotao, vIcone;
+  if (pBotao == 'SNC') vBotao = Ext.MessageBox.YESNOCANCEL;
+  if (pBotao == 'SN') vBotao = Ext.MessageBox.YESNO;
+  if (pBotao == 'O') vBotao = Ext.MessageBox.OK;
+  if (pBotao == 'OC') vBotao = Ext.MessageBox.OKCANCEL;
+  if (vBotao == null) vBotao = Ext.MessageBox.YESNOCANCEL;
+
+  if (pIcone == 'P') vIcone = Ext.MessageBox.QUESTION;
+  if (pIcone == 'E') vIcone = Ext.MessageBox.ERROR;
+  if (pIcone == 'I') vIcone = Ext.MessageBox.INFO;
+  if (pIcone == 'A') vIcone = Ext.MessageBox.WARNING;
+  if (pIcone == 'D') vIcone = 'ext-mb-download';
+
+  Ext.onReady(function () {
+    Ext.MessageBox.show({
+      title: pTitulo,
+      msg: pMsg,
+      buttons: vBotao,
+      fn: Retorno,
+      animEl: pThis,
+      icon: vIcone
+    });
+
+    function Retorno(btn) {
+      if ((btn == 'ok' || btn == 'yes') && pBotao != 'O') {
+        var fn = window[pThis];
+        fn();
+      }
+    };
+
+  });
+};
+
+function msg_aguarde(pThis, pMsg, pTexto, pTempo, pIcone) {
+  //doSubmit(pThis);
+  apex.submit({request: pThis, showWait:true});
+};
+
+function msg_aguarde_aberto(pThis, pMsg, pTexto, pTempo, pIcone) {
+  submitAberto(pThis);
+};
+
+function msg_confirmar_aberto(pThis, pTitulo, pMsg, pBotao, pIcone, pNao) {
+  var vBotao, vIcone;
+  if (pBotao == btn_simnaocanc) vBotao = Ext.MessageBox.YESNOCANCEL;
+  if (pBotao == btn_simnao) vBotao = Ext.MessageBox.YESNO;
+  if (pBotao == btn_ok) vBotao = Ext.MessageBox.OK;
+  if (pBotao == btn_oksubmit) vBotao = Ext.MessageBox.OK; //Ok com submit
+  if (pBotao == btn_okcanc) vBotao = Ext.MessageBox.OKCANCEL;
+  if (vBotao == null) vBotao = Ext.MessageBox.YESNOCANCEL;
+
+  if (pIcone == icn_pergunta) vIcone = Ext.MessageBox.QUESTION;
+  if (pIcone == icn_erro) vIcone = Ext.MessageBox.ERROR;
+  if (pIcone == icn_info) vIcone = Ext.MessageBox.INFO;
+  if (pIcone == icn_aviso) vIcone = Ext.MessageBox.WARNING;
+  if (pIcone == icn_aguarde) vIcone = 'ext-mb-download';
+
+  Ext.onReady(function () {
+    Ext.MessageBox.show({
+      title: pTitulo,
+      msg: pMsg,
+      buttons: vBotao,
+      fn: Retorno,
+      animEl: pThis,
+      icon: vIcone
+    });
+
+    function Retorno(btn) {
+      if ((btn == 'ok' || btn == 'yes') && pBotao != btn_ok) {
+        submitAberto(pThis);
+      } else {
+        if (pNao != null) submitAberto(pNao);
+      }
+    };
+
+  });
+};
+
+function fw_msg_aguarde(pThis, pMsg, pTexto, pTempo, pIcone) {
+  var v = '<span class="u-Processing" role="alert">' +
+    '<span class="u-Processing-spinner"></span>' +
+    '<span class="u-VisuallyHidden">Processing</span>' +
+    '</span>';
+  $('#modalBackground').show();
+  $('#modalBackground').after(v);
+};
+
+function fw_msg_aguarde_fecha() {
+  $('span.u-Processing').remove();
+  $('#modalBackground').hide();
+};
+
+function btn_aguarde(pSubmit) {
+  msg_aguarde(pSubmit, msg_aguarde_processamento, bp_aguarde, 40000000);
+};
+
+//apex.page = {}, function (a, b, c, d) {
+//  function e(a, c) {
+//    var d, e, f = {};
+//    c === 'SUBMIT' ? d = null : c === 'CONFIRM' && (d = 'Delete'), e = {
+//      request: d, set: null, showWait: !!1, waitMsg: null, form: 'wwv_flow'
+//    };
+//    switch (typeof a) {
+//      case 'string': f = b.extend(e, { request: a });
+//        break;
+//      case 'object': f = b.extend(e, a);
+//        break;
+//      default: f = e
+//    }
+//    return f
+//  }
+//  a.itemCallbacks = {}, a.submit = function (a) {
+//    var f, g = e(a, 'SUBMIT'), h = !1;
+//    if (g.submitIfEnter !== d) {
+//      window.event ? f = window.event.keyCode : f = g.submitIfEnter.which;
+//      if (f !== 13) return !0
+//    } h = c.trigger(apex.gPageContext$, 'apexbeforepagesubmit', g.request);
+//    if (g.download !== d) { g.showWait = !g.download };
+//    if (!h) {
+//      //g.showWait&&apex.widget.waitPopup(),g.set&&b.each(g.set,function(a,b){a&&b!==d&&$s(a,b)}),flowSelectAll(),b("#pRequest",apex.gPageContext$).val(g.request);
+//      g.showWait && fw_msg_aguarde(g.request, msg_aguarde_processamento, bp_aguarde, 40000000), g.set && b.each(g.set, function (a, b) { a && b !== d && $s(a, b) }), flowSelectAll(), b("#pRequest", apex.gPageContext$).val(g.request);
+//      try {
+//        window.external && typeof window.external.AutoCompleteSaveForm == 'unknown' && window.external.AutoCompleteSaveForm(b('form[name=' + g.form + ']', apex.gPageContext$).get(0))
+//      } catch (i) { }
+//      b('form[name=' + g.form + ']', apex.gPageContext$).trigger('submit')
+//    } else c.gCancelFlag = !1;
+//    if (g.submitIfEnter !== d) return !1
+//  }, a.confirm = function (b, c) {
+//    var d, f = e(c, 'CONFIRM');
+//    b ? d = b : d = 'Would you like to perform this delete action?', confirm(d) && a.submit(f)
+//  }, apex.submit = a.submit, apex.confirm = a.confirm
+//}(apex.page, apex.jQuery, apex.event);
+
+function submitEnter(a, b) {
+   var c = $x(a), d = c ? c.id : ''; 
+   return apex.submit({ request: d, submitIfEnter: b, showWait:true }) 
+}
+
+function submitAberto(a) { 
+  return apex.submit({ request: a, download: true, showWait:true }) 
+}
+
+function msg_aguarde_on_demand(pThis, pMsg, pTexto, pTempo, pIcone) {
+
+  var vIcone;
+  if (pIcone == 'P') vIcone = Ext.MessageBox.QUESTION;
+  if (pIcone == 'E') vIcone = Ext.MessageBox.ERROR;
+  if (pIcone == 'I') vIcone = Ext.MessageBox.INFO;
+  if (pIcone == 'A') vIcone = Ext.MessageBox.WARNING;
+  if (pIcone == 'D') vIcone = 'ext-mb-download';
+
+  Ext.MessageBox.show({
+    msg: pMsg,
+    progressText: pTexto,
+    width: 300,
+    wait: true,
+    waitConfig: { interval: 200 },
+    icon: vIcone,
+    animEl: pThis
+  });
+
+  var fn = window[pThis];
+  fn();
+
+  setTimeout(function () {
+    Ext.MessageBox.hide();
+  }, pTempo);
+};
+
+function msg_confirmar_aguarde(pThis, pTitulo, pMsg, pBotao, pIcone, pNao, pMsgAg, pTexto, pTempo) {
+  var vBotao, vIcone;
+  if (pBotao == 'SNC') vBotao = Ext.MessageBox.YESNOCANCEL;
+  if (pBotao == 'SN') vBotao = Ext.MessageBox.YESNO;
+  if (pBotao == 'O') vBotao = Ext.MessageBox.OK;
+  if (pBotao == 'OC') vBotao = Ext.MessageBox.OKCANCEL;
+  if (vBotao == null) vBotao = Ext.MessageBox.YESNOCANCEL;
+
+  if (pIcone == 'P') vIcone = Ext.MessageBox.QUESTION;
+  if (pIcone == 'E') vIcone = Ext.MessageBox.ERROR;
+  if (pIcone == 'I') vIcone = Ext.MessageBox.INFO;
+  if (pIcone == 'A') vIcone = Ext.MessageBox.WARNING;
+  if (pIcone == 'D') vIcone = 'ext-mb-download';
+
+  Ext.onReady(function () {
+    Ext.MessageBox.show({
+      title: pTitulo,
+      msg: pMsg,
+      buttons: vBotao,
+      fn: Retorno,
+      animEl: pThis,
+      icon: vIcone
+    });
+
+    function Retorno(btn) {
+      if ((btn == 'ok' || btn == 'yes') && pBotao != 'O') {
+        msg_aguarde(pThis, pMsgAg, pTexto, pTempo, vIcone);
+      } else {
+        if (pNao != null && btn == 'no' && pBotao != 'O') {
+          doSubmit(pNao);
+        }
+      }
+    };
+
+  });
+};
+
+function msg_confirmar_aguarde_on_demand(pThis, pTitulo, pMsg, pBotao, pIcone, pMsgAg, pTexto, pTempo) {
+  var vBotao, vIcone;
+  if (pBotao == 'SNC') vBotao = Ext.MessageBox.YESNOCANCEL;
+  if (pBotao == 'SN') vBotao = Ext.MessageBox.YESNO;
+  if (pBotao == 'O') vBotao = Ext.MessageBox.OK;
+  if (pBotao == 'OC') vBotao = Ext.MessageBox.OKCANCEL;
+  if (vBotao == null) vBotao = Ext.MessageBox.YESNOCANCEL;
+
+  if (pIcone == 'P') vIcone = Ext.MessageBox.QUESTION;
+  if (pIcone == 'E') vIcone = Ext.MessageBox.ERROR;
+  if (pIcone == 'I') vIcone = Ext.MessageBox.INFO;
+  if (pIcone == 'A') vIcone = Ext.MessageBox.WARNING;
+  if (pIcone == 'D') vIcone = 'ext-mb-download';
+
+  Ext.onReady(function () {
+    Ext.MessageBox.show({
+      title: pTitulo,
+      msg: pMsg,
+      buttons: vBotao,
+      fn: Retorno,
+      animEl: pThis,
+      icon: vIcone
+    });
+
+    function Retorno(btn) {
+      if ((btn == 'ok' || btn == 'yes') && pBotao != 'O') {
+        msg_aguarde_on_demand(pThis, pMsgAg, pTexto, pTempo, vIcone);
+      }
+    };
+
+  });
+};
+
+/* Função para abrir uma url dentro de um popup de tamanho passado como parâmetro */
+function popup(v_url, v_width, v_height, v_scroll) {
+  w = open(v_url, 'winLov', 'Scrollbars=1,resizable=1,menubar=1,width=' + v_width + ',height=' + v_height);
+  if (w.opener == null)
+    w.opener = self;
+  w.focus();
+}
+
+function popup_pagina(pUrl, pWidth, pHeight, pResize, pScroll) {
+
+  if (pWidth == null) { pWidth = '800'; }
+  if (pHeight == null) { pHeight = '600'; }
+  if (pResize == null) { pResize = '0'; }
+  if (pScroll == null) { pScroll = '0'; }
+
+  w = open(pUrl, 'POP', 'Scrollbars=' + pScroll + ',resizable=' + pResize + ',width=' + pWidth + ',height=' + pHeight);
+
+  if (w.opener == null)
+    w.opener = self;
+  w.focus();
+}
+
+/* Função que permite somente digitar números
+function SomenteNumero(e){
+  var tecla=(window.event)?event.keyCode:e.which;
+  if((tecla > 47 && tecla < 58)) return true;
+  else{
+    if (tecla != 8) return false;
+    else return true;
+  }
+}*/
+function SomenteNumero(e) {
+  var tecla = (window.event) ? e.keyCode : e.which;
+  if ((tecla > 47 && tecla < 58)) {
+    return true;
+  }
+  else {
+    if (tecla != 8 && e.keyCode != 9) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+}
+
+function SomenteNumero(e, s) {
+  var tecla = (window.event) ? e.keyCode : e.which;
+  if ((tecla > 47 && tecla < 58)) {
+    return true;
+  }
+  else {
+    if (tecla != 8 && e.keyCode != 9 && tecla != 13) {
+      return false;
+    }
+    else {
+      if (s == true && tecla == 13) {
+        doSubmit();
+      }
+      else {
+        return true;
+      }
+    }
+  }
+}
+
+/* Função que permite somente digitar números e vírgula */
+function SomenteNumeroVirgula(e) {
+  var tecla = (window.event) ? event.keyCode : e.which;
+  if ((tecla > 47 && tecla < 58) || tecla == 44) return true;
+  else {
+    if (tecla != 8) return false;
+    else return true;
+  }
+}
+
+
+/* Função usada para formatar CEP no evento OnKeyPress */
+function mascara_cep(pthis) {
+  v_tam = pthis.value;
+  if (v_tam.length == 5) { pthis.value += '-'; }
+  $('#' + pthis.id).setCursorPosition(pthis.value.length);
+}
+
+
+/* Função usada para formatar PLACA no evento OnKeyPress */
+function mascara_placa(pthis) {
+  pthis.value = pthis.value.toUpperCase().replace(/[^A-Z0-9-]/gi, '');
+}
+
+function mascara_placa2(pthis, event) {
+  chCode = event.charCode != 0 ? event.charCode : event.keyCode;
+  v_tam = pthis.value;
+  if (chCode == '46') { return false; }
+  if (v_tam.length == 3 && chCode != '8') { pthis.value += '-'; }
+}
+
+/* Fun��es usadas para formatar CNPJ e Cart�o no evento OnKeyPress (Funciona para Firefox)*/
+function execmascara() {
+  v_obj.value = v_fun(v_obj.value)
+}
+
+/*Fun��es usada para formatar CNPJ no evento OnKeyPress*/
+function mascara_cnpj(pthis) {
+  pthis.value = pthis.value.replace(/\D/g, '');
+  pthis.value = pthis.value.replace(/^(\d{2})(\d)/g, '$1.$2');
+  pthis.value = pthis.value.replace(/^(\d{2})\.(\d{3})(\d)/g, '$1.$2.$3');
+  pthis.value = pthis.value.replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/g, '$1.$2.$3/$4');
+  pthis.value = pthis.value.replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/g, '$1.$2.$3/$4-$5');
+  return pthis;
+}
+
+function mascara_cei(pthis) {
+  pthis.value = pthis.value.replace(/\D/g, '');
+  pthis.value = pthis.value.replace(/^(\d{2})(\d)/g, '$1.$2');
+  pthis.value = pthis.value.replace(/^(\d{2})\.(\d{3})(\d)/g, '$1.$2.$3');
+  pthis.value = pthis.value.replace(/^(\d{2})\.(\d{3})\.(\d{5})(\d)/g, '$1.$2.$3/$4');
+  return pthis;
+}
+
+function mcc_cnpj(v) {
+
+  //coloca ponto entre o segundo e o terceiro dígitos
+  v = v.replace(/^(\d{2})(\d)/, '$1.$2')
+
+  //coloca ponto entre o quinto e o sexto dígitos
+  v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+
+  //coloca uma barra entre o oitavo e o nono dígitos
+  v = v.replace(/\.(\d{3})(\d)/, '.$1/$2')
+
+  //coloca um hífen depois do bloco de quatro dígitos
+  v = v.replace(/(\d{4})(\d)/, '$1-$2')
+
+  return v;
+
+}
+
+function mascara_cartao(pthis) {
+  v_obj = pthis
+  v_fun = mcc_cartao
+  setTimeout('execmascara()', 1)
+}
+function mcc_cartao(v) {
+  v = v.replace(/\D/g, '');
+  v = v.replace(/^(\d{4})(\d)/g, '$1 $2');
+  v = v.replace(/^(\d{4})\s(\d{4})(\d)/g, '$1 $2 $3');
+  v = v.replace(/^(\d{4})\s(\d{4})\s(\d{4})(\d)/g, '$1 $2 $3 $4');
+  return v;
+}
+
+function mascara_cartao_pesquisa(pthis) {
+  v_obj = pthis
+  v_fun = mcc_cartao_pesquisa
+  setTimeout('execmascara()', 1)
+}
+
+function mcc_cartao_pesquisa(v) {
+  v = v.replace(/\D/g, '').substring(0, 6);
+  return v;
+}
+
+function mascara_data(pthis) {
+  v_obj = pthis
+  v_fun = mcc_data
+  setTimeout('execmascara()', 1)
+}
+function mcc_data(v) {
+  v = v.replace(/\D/g, '')
+  v = v.replace(/(\d{2})(\d)/, '$1/$2')
+  v = v.replace(/(\d{2})(\d)/, '$1/$2')
+  if (v.length == 10) {
+    return v
+  } else if (v.length == 4) {
+    return v
+  } else if (v.length == 7) {
+    return v
+  } else {
+    event.returnValue = true;
+  }
+}
+
+function mascara_cpf(o) {
+  v_obj = o
+  v_fun = mcc_cpf
+  setTimeout('execmascara()', 1)
+}
+
+function mcc_cpf(v) {
+  v = v.replace(/^(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+  v = v.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
+  return v;
+}
+/*function mcc_cpf(v) {
+
+  v = v.replace(/^(\d{3})(\d)/,         "$1.$2")
+  v = v.replace(/^(\d{3})\.(\d{3})(\d)/,"$1.$2.$3")
+  v = v.replace(/(\d{3})(\d)/,          "$1-$2")
+
+  if (v.length == 14){
+    return v
+  }else if (v.length == 5){
+    return v
+  }else if (v.length == 9){
+    return v
+  }else if (v.length == 13){
+    return v
+  }else{
+    event.returnValue = true;
+  }
+
+}*/
+
+function mascara_hora(pthis) {
+  v_obj = pthis
+  v_fun = mcc_hora
+  setTimeout('execmascara()', 1)
+}
+function mcc_hora(v) {
+  v = v.replace(/^(\d{2})(\d)/, '$1:$2')
+  v = v.replace(/^(\d{2})\:(\d{2})(\d)/, '$1:$2:$3')
+
+  if (v.length == 8) {
+    return v
+  } else if (v.length == 4) {
+    return v
+  } else if (v.length == 6) {
+    return v
+  } else {
+    event.returnValue = true;
+  }
+}
+
+function consulta_cep_ok(pSubmit, pend, pbairro, pcidade, puf) {
+  $x_disableItem(pend, false);
+  $x_disableItem(pbairro, false);
+  $x_disableItem(pcidade, false);
+  $x_disableItem(puf, false);
+  if (pSubmit != '') msg_aguarde(pSubmit, msg_aguarde_processamento, bp_aguarde, 40000000);
+}
+
+/*FunÃ§Ã£o utilizada para pesquisar o CEP*/
+function consulta_cep(pThis, pcep, pend, pbairro, pcidade, puf, pend1, pbairro1, pcidade1, puf1, pdisable) {
+
+  var v_codresp = -1;
+  var v_retorno = new Array(6);
+  this.dTimeout;
+  clearTimeout(this.dTimeout);
+  this.dGet = dGet;
+  this.dShow = dShow;
+  this.dCancel = dCancel;
+  var get = new htmldb_Get(null, $x('pFlowId').value, 'APPLICATION_PROCESS=AJAX_CONSULTA_CEP_WS', 0);
+  this.dGet();
+  return;
+
+  function dGet() {
+
+    this.dTimeout = setTimeout('this.dCancel()', 60000);
+
+    get.add('ITEM_CEP_VALOR', $x(pcep).value.replace('-', ''));
+
+    var gRetorno = get.get();
+
+    $x_Show(pcep + '_PROG');
+    get.GetAsync(dShow);
+
+    if ($x(pdisable).value == '') {
+      ini_cons_cep(pcep, pend, pbairro, pcidade, puf);
+    }
+
+  }
+
+  function dShow() {
+
+    try {
+
+      switch (p.readyState) {
+        case 1: break;
+        case 2: break;
+        case 3: break;
+        case 4:
+
+          v_retorno = p.responseText.split('@');
+          v_codresp = parseInt(v_retorno[4], 10);
+
+          if (parseInt(v_codresp, 10) == 0) {
+
+            $x_Hide(pcep + '_PROG');
+            var v_aux = v_retorno[0];
+
+            if (v_aux == '') {
+              $x_disableItem(pend, false);
+            } else {
+              $x(pend).value = v_aux;
+              $x(pend).disabled = 'true';
+            }
+
+            v_aux = v_retorno[1];
+            if (v_aux == '') {
+              $x_disableItem(pbairro, false);
+            } else {
+              $x(pbairro).value = v_aux;
+              $x(pbairro).disabled = 'true';
+            }
+
+            $x(pcidade).value = v_retorno[2];
+
+            if ($x(pcidade).value == '') {
+              $x_disableItem(pcidade, false);
+            } else {
+              $x(pcidade).disabled = 'true';
+            }
+
+            $x(puf).value = v_retorno[3];
+
+            if ($x(puf).value == '') {
+              $x_disableItem(puf, false);
+            } else {
+              $x(puf).disabled = 'true';
+            }
+
+            if ($x(pend).value == '') {
+              $x(pend).value = $x(pend1).value;
+            } else {
+              $x(pend1).value = $x(pend).value;
+            }
+
+            if ($x(pbairro).value == '') {
+              $x(pbairro).value = $x(pbairro1).value;
+            } else {
+              $x(pbairro1).value = $x(pbairro).value;
+            }
+
+            $x(pcidade1).value = $x(pcidade).value;
+            $x(puf1).value = $x(puf).value;
+
+          } else {
+
+            $x_Hide(pcep + '_PROG');
+            $x_disableItem(pend, false);
+            $x_disableItem(pbairro, false);
+            $x_disableItem(pcidade, false);
+            $x_disableItem(puf, false);
+
+            $x('rollover_content').innerHTML = v_retorno[5];
+            $x_Show('rollover');
+
+            htmldb_IE_Select_Item_Fix($x('rollover'));
+
+            $x_Style('rollover', 'left', findPosX(pThis) + pThis.offsetWidth + 5);
+            $x_Style('rollover', 'top', findPosY(pThis));
+
+            document.onclick = function (e, v_codresp) {
+              dCheckClick(e);
+            }
+
+          }
+
+          break;
+
+        default:
+          $x_Hide(pcep + '_PROG');
+          return false;
+      }
+
+    } catch (e) {
+      $x_Hide(pcep + '_PROG');
+      return false;
+    }
+
+  }
+
+  function dCheckClick(e) {
+
+    var elem = html_GetTarget(e);
+
+    try {
+
+      var lTable = $x_UpTill(elem, 'DIV');
+
+      if (lTable.id != 'rollover_content') {
+        dCancel();
+      }
+
+    } catch (err) {
+      dCancel();
+    }
+
+  }
+
+  function dCancel() {
+    $x_Hide('rollover');
+    document.onclick = null;
+    get = null;
+  }
+
+}
+
+/* FunÃ§Ã£o que faz a máscara de Hora/Minuto enquanto digita */
+function normaliza_hora(pThis) {
+  l_Value = pThis.value;
+  if (l_Value.length == 2) {
+    pThis.value += ':';
+  }
+};
+
+function validarValor(pValor, pDecimal, pInteiro, pNegativo, pMascara) {
+  var vDecimal = (pDecimal == null ? 2 : pDecimal);
+  var vInteiro = (pInteiro == null ? 0 : pInteiro);
+  var vNegativo = (pNegativo == null ? 0 : pNegativo);
+  var vMascara = (pMascara == null ? 0 : pMascara);
+  var vIntComMasc = '*';
+  var vIntSemMasc = '*';
+  var vPrecisao = '';
+  var regExpComMasc;
+  var regExpSemMasc;
+
+  if (vDecimal > 0) {
+    vPrecisao = '(,[0-9]{1,' + vDecimal + '})?';
+  }
+
+  if (vInteiro > 0) {
+    vIntComMasc = '{0,' + (Math.floor(vInteiro / 3) - 1) + '}';
+    vIntSemMasc = '{1,' + vInteiro + '}';
+  }
+
+  if (vNegativo == 0) {
+    vNegativo = '(-)?';
+  } else if (vNegativo == -1) {
+    vNegativo = '-';
+  } else {
+    vNegativo = '';
+  }
+
+  switch (vMascara) {
+    case 0:
+      regExpComMasc = new RegExp('^' + vNegativo + '[0-9]{1,3}(\\.[0-9]{3})' + vIntComMasc + '?' + vPrecisao + '$');
+      regExpSemMasc = new RegExp('^' + vNegativo + '[0-9]' + vIntSemMasc + vPrecisao + '$');
+      return regExpComMasc.test(pValor) || regExpSemMasc.test(pValor);
+    case 1:
+      regExpSemMasc = new RegExp('^' + vNegativo + '[0-9]' + vIntSemMasc + vPrecisao + '$');
+      return regExpSemMasc.test(pValor);
+    case 2:
+      regExpComMasc = new RegExp('^' + vNegativo + '[0-9]{1,3}(\\.[0-9]{3})' + vIntComMasc + '?' + vPrecisao + '$');
+      return regExpComMasc.test(pValor);
+    default:
+      return false;
+  }
+};
+
+function excluirOnDemand(pTabela, pId) {
+
+  Ext.onReady(function () {
+    Ext.MessageBox.show({
+      title: tit_excluir,
+      msg: msg_excluir,
+      buttons: Ext.MessageBox.YESNO,
+      fn: Retorno,
+      icon: Ext.MessageBox.QUESTION
+    });
+
+    function Retorno(btn) {
+      if (btn == 'yes') {
+
+        Ext.MessageBox.show({
+          msg: msg_aguarde_processamento,
+          progressText: bp_aguarde,
+          width: 300,
+          wait: true,
+          waitConfig: { interval: 200 }
+        });
+
+        setTimeout(function () {
+          Ext.MessageBox.hide();
+        }, 400000);
+
+        var run;
+        var count = 0;
+        var reg = document.getElementsByName('f01');
+
+        for (i = 0; i < reg.length; i++) {
+          if (reg[i].checked) {
+            count += 1;
+            if (count % 1000 == 0) {
+              param += reg[i].value + '|';
+            } else {
+              param += reg[i].value + ',';
+            }
+          }
+        }
+
+        if (count == 0) {
+          msg_confirmar(null, 'ERRO', 'Selecione ao menos um registro antes de continuar.', btn_ok, icn_erro);
+          throw err;
+        }
+
+        param = param.substring(0, (param.length - 1));
+        run = new htmldb_Get(null, $v('pFlowId'), 'APPLICATION_PROCESS=EXCLUIR_ON_DEMAND', 0);
+        run.addParam('x01', pTabela);
+        run.addParam('x02', pId);
+        run.addParam('x03', param);
+        run.get();
+
+        location.reload(true);
+
+      }
+    };
+
+  });
+
+};
+
+function mascara_telefone(v) {
+  if (v.value.length <= 9) {
+    v.value = v.value.replace(/\D/g, '');
+    v.value = v.value.replace(/^(\d{4})(\d)/g, '$1-$2');
+  } else {
+    v.value = v.value.replace(/\D/g, '');
+    v.value = v.value.replace(/^(\d{5})(\d)/g, '$1-$2');
+  }
+}
+
+function mascara_valor(pthis, event) {
+
+  if (pthis.value === '') {
+    return
+  }
+
+  chCode = ('charCode' in event) ? event.charCode : event.keyCode;
+
+  var tmp = pthis.value;
+  tmp = tmp.replace(/\D/g, '');
+
+  while (tmp.charAt(0) == '0') {
+    tmp = tmp.substr(1);
+  }
+
+  if (tmp.length < 3) {
+    tmp = Array(4 - tmp.length).join('0') + tmp;
+  }
+
+  tmp = tmp.replace(/(\d{1})(\d{14})$/, '$1.$2');
+  tmp = tmp.replace(/(\d{1})(\d{11})$/, '$1.$2');
+  tmp = tmp.replace(/(\d{1})(\d{8})$/, '$1.$2');
+  tmp = tmp.replace(/(\d{1})(\d{5})$/, '$1.$2');
+  tmp = tmp.replace(/(\d{1})(\d{1,2})$/, '$1,$2');
+
+  pthis.value = tmp;
+}
+
+function mascara_valor_4casas(pthis, event) {
+
+  chCode = ('charCode' in event) ? event.charCode : event.keyCode;
+
+  var tmp = pthis.value;
+  tmp = tmp.replace(/\D/g, '');
+
+  while (tmp.charAt(0) == '0') {
+    tmp = tmp.substr(1);
+  }
+
+  if (tmp.length < 6) {
+    tmp = Array(6 - tmp.length).join('0') + tmp;
+  }
+
+  tmp = tmp.replace(/(\d{1})(\d{17})$/, '$1.$2');
+  tmp = tmp.replace(/(\d{1})(\d{13})$/, '$1.$2');
+  tmp = tmp.replace(/(\d{1})(\d{10})$/, '$1.$2');
+  tmp = tmp.replace(/(\d{1})(\d{7})$/, '$1.$2');
+  tmp = tmp.replace(/(\d{1})(\d{1,4})$/, '$1,$2');
+
+  pthis.value = tmp;
+}
+/***********************************************************************/
+
+function notificaDesktop(pTitulo, pMesagem, pLink) {
+
+  if (Notification.permission !== 'granted') {
+    Notification.requestPermission(function (permission) {
+      // If the user accepts, let's create a notification
+      if (permission === 'granted') {
+        var notification = new Notification(pTitulo, {
+          /* icone da tela de login do fwcard */
+          icon: v_icon_notificacao,
+          body: pMesagem,
+        });
+      }
+    });
+  } else {
+    var notification = new Notification(pTitulo, {
+      /* icone da tela de login do fwcard */
+      icon: v_icon_notificacao,
+      body: pMesagem,
+    });
+    notification.onclick = function () {
+      window.location.href = pLink;
+    };
+  }
+}
+
+function atualizaAlertas(pJson, pUrl, pIdModulo, pClasseMenu, pTimerId, pExibeNotificacao) {
+
+  if (pIdModulo != null) {
+    var qtAlerta = pJson['modulo_qt_alerta'][pIdModulo];
+
+    if ($.trim(qtAlerta) != '') {
+      if (parseInt($('#alerta_' + pIdModulo).text(), 10) != qtAlerta)
+        if ($('#alerta_' + pIdModulo).length == 0)
+          $('.' + pClasseMenu).parent('span').parent('a').after(
+            '<a id="' + 'alerta_' + pIdModulo + '" class="badge" href="javascript:consultaAlertas(\'' + pUrl + '\',\'Alarmes\',' + pIdModulo + ');"><span class="badge red">' + qtAlerta + '</span></a>'
+          );
+        else
+          $('#alerta_' + pIdModulo + '>span').text(qtAlerta);
+
+    } else {
+      $('#alerta_' + pIdModulo).remove();
+    }
+
+    /*if(qtAlerta != parseInt(v_totalAlertas[''+pIdModulo+''])) {
+      v_totalAlertas[''+pIdModulo+''] = qtAlerta;
+    }*/
+
+  } else {
+    if(pJson != undefined) {
+      // atualizaAlertas(pUrl, null)  -- para o total geral
+      var qtAlerta = pJson['total'];
+      if (qtAlerta == 0) {
+        $('#alarme_sistema .navIcon.bell.white').css('display', 'block');
+        $('#alarme_sistema .navIcon.bell.red').css('display', 'none');
+        $('#qt_alarme_sistema').text('');
+      } else {
+        $('#alarme_sistema .navIcon.bell.white').css('display', 'none');
+        $('#alarme_sistema .navIcon.bell.red').css('display', 'block');
+        $('#qt_alarme_sistema').text(qtAlerta);
+      }
+  
+      /* não deve exibir alerta quando for carregamento de página */
+      if (qtAlerta > 0 && qtAlerta != v_totalAlertas && pExibeNotificacao) {
+        v_totalAlertas = qtAlerta;
+        /* exibe apenas uma vez, ao carregar a página - e subseq. quando houver alteração no número de notificações */
+        var appId = $v('pFlowId'); // APP_ID
+        var session = $v('pInstance'); // SESSION
+  
+        notificaDesktop('Alertas', 'Você possui ' + v_totalAlertas + ' notificações não lidas.', 'javascript:consultaAlertas(\'f?p=' + appId + ':4:' + session + '::::\', \'Alertas\',' + pIdModulo + ');');
+      }
+
+    }
+
+  }
+}
+
+
+function getOperadorAlerta(pUrl, pIdModulo, pClasseMenu, pTimerId, pTimerExistente) {
+
+  apex.server.process('CONSULTA_ALERTA_OPERADOR', {
+  }, {
+    dataType: 'text',
+    success: function (pData) {
+      /* ********************** */
+      /* Exemplo de JSON de Retorno (em pData)
+      {
+        "modulo_qt_alerta":{
+          "2":2,
+          "3":1
+        },
+        "total":3
+      }
+      */
+      var jsonObj;
+
+      try {
+        jsonObj = JSON.parse(pData);
+        atualizaAlertas(jsonObj, pUrl, pIdModulo, pClasseMenu, pTimerId, false);
+      } catch (e) {
+        if (pTimerId != null)
+          clearInterval(pTimerId);
+      }
+
+      /* Atualiza total geral */
+      atualizaAlertas(jsonObj, pUrl, null, pClasseMenu, pTimerId, (pTimerId != null || !pTimerExistente));
+
+    }
+  });
+}
+
+function forcaAtualizaAlerta() {
+  var appId = $v('pFlowId'); // APP_ID
+  var session = $v('pInstance'); // SESSION
+  var vIdModulo = '2';
+  var vClasseMenu = 'menu_superior_cobranca';
+
+  var vUrl = 'f?p=' + appId + ':4:' + session + '::::';
+
+  var vTimerExistente = { existe: false };
+  fAtualizaRelogioGlobal(vTimerExistente);
+  setOperadorAlerta().then(function(){
+    getOperadorAlerta(vUrl, vIdModulo, vClasseMenu, ifxTimerId, vTimerExistente.existe);
+  });
+}
+
+function consultaAlertas(pUrl, pTitle, pIdModulo) {
+
+  var dialog = null;
+
+  apex.server.process('ATUALIZA_MODULO_ALERTA', {
+    x01: pIdModulo
+  }, {
+    dataType: 'text',
+    success: function (pData) {
+      dialog = fwAbrirDialogUrl(pUrl, 850, 400, pTitle);
+
+      dialog.on('dialogclose', function (event, ui) {
+        verificaAlertasLidos().then(function(){
+          forcaAtualizaAlerta();
+        });
+      });
+    }
+  });
+}
+
+function f_tamanhoDocumento(vLabelName) {
+  var vTamDocumento = (vLabelName == 'CEI:' ? 15 : (vLabelName == 'CPF:' ? 14 : (vLabelName == 'CNPJ:' ? 18 : (vLabelName == 'CNPJ/CPF:' ? 18 : 0))));
+  return vTamDocumento;
+}
+
+function f_aplicaMascaraDocumento() {
+  $('label:contains(CPF),label:contains(CNPJ),label:contains(CEI)').each(function () {
+
+    if ($.trim($(this).text()) == 'CPF:' || $.trim($(this).text()) == 'CNPJ:' || $.trim($(this).text()) == 'CNPJ/CPF:' || $.trim($(this).text()) == 'CEI:') {
+
+      var vLabel = $(this);
+      //var vItem = $('#' + vLabel.attr('for') + ':not[data-proposta]'); 
+      var vItem = $(`#${vLabel.prop('htmlFor')}:not[data-proposta]`);
+
+      /* controle de maxlength dos itens */
+      vLabelName = $.trim($(vLabel).text());
+      vItemSize = f_tamanhoDocumento(vLabelName);
+
+      if (vItemSize)
+        vItem.attr('maxlength', vItemSize);
+
+      window.keypressed = {};
+
+      vItem.keydown(function (e) {
+
+        if (e.keyCode != 8)
+          if (window.keypressed[e.which])
+            e.preventDefault();
+          else
+            window.keypressed[e.which] = true;
+      }).keyup(function (e) {
+
+        window.keypressed[e.which] = false;
+        vMyLabelName = $.trim($('label[for="' + $(this).attr('id') + '"]').text());
+        /* mascara CEI */
+        if (vMyLabelName == 'CEI:')
+          mascara_cei(this);
+
+        /* mascara CPF */
+        if (vMyLabelName == 'CPF:')
+          mascara_cpf(this);
+
+        /* mascara CNPJ */
+        if (vMyLabelName == 'CNPJ:')
+          mascara_cnpj(this);
+
+        /* mascara CNPJ/CPF */
+        if (vMyLabelName == 'CNPJ/CPF:') {
+          var vTexto = $(this).val().replace(/[^0-9]/g, '');
+          var vTamanho = vTexto.length;
+
+          if (vTamanho == 12) {
+            $(this).val('');
+            $(this).val(vTexto);
+          }
+          if (vTamanho < 12)
+            mascara_cpf(this);
+          else
+            if (vTamanho > 12)
+              mascara_cnpj(this);
+        }
+      });
+
+    }
+  });
+
+  $('label:has(span:contains(CPF)),label:has(span:contains(CNPJ)),label:has(span:contains(CEI))').each(function () {
+
+    if ($.trim($(this).find('span:contains(CPF), span:contains(CNPJ), span:contains(CEI)').text()) == 'CPF:' || $.trim($(this).find('span:contains(CPF), span:contains(CNPJ), span:contains(CEI)').text()) == 'CNPJ:' || $.trim($(this).find('span:contains(CPF), span:contains(CNPJ), span:contains(CEI)').text()) == 'CNPJ/CPF:' || $.trim($(this).find('span:contains(CPF), span:contains(CNPJ), span:contains(CEI)').text()) == 'CEI:') {
+
+      var vLabel = $(this);
+      var vItem = $('#' + vLabel.attr('for'));
+
+      /* controle de maxlength dos itens */
+      vLabelName = $.trim($(vLabel).text());
+      vItemSize = f_tamanhoDocumento(vLabelName);
+
+      if (vItemSize)
+        vItem.attr('maxlength', vItemSize);
+
+      window.keypressed = {};
+
+      vItem.keydown(function (e) {
+
+        if (e.keyCode != 8)
+          if (window.keypressed[e.which])
+            e.preventDefault();
+          else
+            window.keypressed[e.which] = true;
+      }).keyup(function (e) {
+
+        window.keypressed[e.which] = false;
+        vMyLabelName = $.trim($('label[for="' + $(this).attr('id') + '"]').find('span:contains(CPF), span:contains(CNPJ), span:contains(CEI)').text());
+        /* mascara CEI */
+        if (vMyLabelName == 'CEI:')
+          mascara_cei(this);
+
+        /* mascara CPF */
+        if (vMyLabelName == 'CPF:')
+          mascara_cpf(this);
+
+        /* mascara CNPJ */
+        if (vMyLabelName == 'CNPJ:')
+          mascara_cnpj(this);
+
+        /* mascara CNPJ/CPF */
+        if (vMyLabelName == 'CNPJ/CPF:') {
+          var vTexto = $(this).val().replace(/[^0-9]/g, '');
+          var vTamanho = vTexto.length;
+
+          if (vTamanho == 12) {
+            $(this).val('');
+            $(this).val(vTexto);
+          }
+          if (vTamanho < 12)
+            mascara_cpf(this);
+          else
+            if (vTamanho > 12)
+              mascara_cnpj(this);
+        }
+      });
+
+    }
+  });
+}
+
+/* Função para mascarar documentos de acordo com o tipo na digitação */
+function mascara_tp_docto(pthis, pitem) {
+
+  if (pitem) {
+    var elemento = document.getElementById(pitem);
+
+    if (elemento) {
+      switch (elemento.value) {
+        case 'F':
+          pthis.maxLength = 14;
+          mascara_cpf(pthis);
+          break;
+        case 'J':
+          pthis.maxLength = 18;
+          mascara_cnpj(pthis);
+          break;
+        case 'E':
+          pthis.maxLength = 15;
+          mascara_cei(pthis);
+          break;
+        case 'O':
+          pthis.maxLength = 13;
+          break;
+        case 'R':
+          pthis.maxLength = 12;
+          break;
+      }
+    }
+    else {
+      switch (pitem) {
+        case 'F':
+          pthis.maxLength = 14;
+          mascara_cpf(pthis);
+          break;
+        case 'J':
+          pthis.maxLength = 18;
+          mascara_cnpj(pthis);
+          break;
+        case 'E':
+          pthis.maxLength = 15;
+          mascara_cei(pthis);
+          break;
+        case 'O':
+          pthis.maxLength = 13;
+          break;
+        case 'R':
+          pthis.maxLength = 12;
+          break;
+      }
+    }
+  }
+}
+
+/* Funcao para mascarar documentos de acordo com o tipo quando perde foco */
+function mascara_tp_docto_foco(pthis, pblur) {
+  v_tam = pthis.value;
+  if (pblur == '1') {
+    if (v_tam.length == 14) {
+      pthis.maxLength = 18;
+      mascara_cnpj(pthis);
+    }
+    else if (v_tam.length == 12) {
+      pthis.maxLength = 15;
+      mascara_cei(pthis);
+    }
+    else if (v_tam.length == 11) {
+      pthis.maxLength = 14;
+      mascara_cpf(pthis);
+    }
+  }
+}
+
+
+/**
+ * Função que limita digitacao de caracteres em textarea (considerando tamanho das quebras de linha)
+ *
+ * Parâmetros:
+ *    item:   item textarea cujo tamanho deve ser limitado.
+ *
+ * Analista:
+ *    14/10/2016 - Tiago Arruda     - 157321 - Implementação
+      05/04/2018 - Felipe D. Santos - 169197 - Copiado para o FwCard
+**/
+function fwLimiteTxArea(item) {
+
+  var tamMaximo = $('#' + $(item).attr('id') + '_CHAR_COUNT>span:nth(1)').text();
+
+  item.onkeypress = function (e) {
+    //var tamMaximo = item.getAttribute('maxlength');
+    var strPrevista = item.value + String.fromCharCode(e.which);
+    var tamPrevisto = strPrevista.replace(/\r(?!\n)|\n(?!\r)/g, '\n').length;
+
+    var key = e.keyCode || e.charCode;
+    /* se != DEL e BACKSPACE, e tam. maximo campo < tam. minimo, retorna false */
+    return !(!(key == 8 || (key == 46 && String.fromCharCode(e.which) != '.') || (parseInt(key, 10) > 36 && parseInt(key, 10) < 41)) && parseInt(tamMaximo, 10) < parseInt(tamPrevisto, 10));
+  };
+
+  item.onpaste = function (e) {
+    var pastedText = undefined;
+    if (window.clipboardData && window.clipboardData.getData) {
+      // IE
+      pastedText = window.clipboardData.getData('Text');
+    } else
+      if (e.clipboardData && e.clipboardData.getData) {
+        pastedText = e.clipboardData.getData('text/plain');
+      }
+
+    //var tamMaximo = item.getAttribute('maxlength');
+    var strPrevista = item.value + pastedText;
+    var tamPrevisto = strPrevista.replace(/\r(?!\n)|\n(?!\r)/g, '\n').length;
+
+    return (parseInt(tamPrevisto, 10) <= parseInt(tamMaximo, 10));
+  };
+}
+
+function ifxVrfAbreRelatorio(pPesqRel) {
+  var vUrl = 'f?p=' + $v('pFlowId') + ':5:' + $v('pInstance') + ':::::';
+
+  if ($(pPesqRel).val() == '1') {
+    window.open(vUrl, '_blank', 'width=800,height=500,scrollbars=0');
+    $(pPesqRel).val('0');
+    apex.server.process('DUMMY', { pageItems: '#' + $(pPesqRel).attr('id') }, { dataType: 'text' });
+  }
+}
+
+function getSeqRelatorio() {
+  var get = new htmldb_Get(null, $v('pFlowId'),
+    'APPLICATION_PROCESS=BUSCA_SEQ_VISUALIZA_RELATORIO', 0);
+
+  return get.get();
+}
+
+function ifxAbreURLRelatorioIFrame(pIFrame) {
+  fw_msg_aguarde();
+  $(pIFrame).attr('src', document.getElementById('P0_URL_RELATORIO').value);
+  fw_msg_aguarde_fecha();
+}
+
+var v_totalAlertas = {};
+
+function f_inicializaListas() {
+  v_totalAlertas = 0;
+}
+
+/* ***************************************************************************************************** */
+/* ********************* IMPLEMENTAÇÃO DE FUNÇÕES DE TEMPORIZAÇÃO PARA NOTIFICAÇÃO ********************* */
+/* ***************************************************************************************************** */
+
+var G_TIMER_MINUTOS = 10;
+
+function timerToDate(pHoraCarrega) { // getTemporizador
+  vHoraSplit = pHoraCarrega.split('-');
+
+  vData = vHoraSplit[0].split('/');
+  vHora = vHoraSplit[1].split(':');
+
+  return new Date(vData[2], vData[1] - 1, vData[0], vHora[0], vHora[1], vHora[2]);
+}
+
+
+/* Responsável por setar a variavel global com o tempo atual + 10 minutos */
+function inicializaTemporizador(vData) {
+
+  var x = vData;//new Date();
+  x.setMinutes(x.getMinutes() + G_TIMER_MINUTOS);
+
+  vDataHoraAlarme = x.getDate() + '/' + (x.getMonth() + 1) + '/' + x.getFullYear() + '-' + x.getHours() + ':' + x.getMinutes() + ':' + x.getSeconds();
+
+  apex.server.process('TEMPORIZADOR_NOTIFICACAO', {
+    x01: vDataHoraAlarme
+  }, {
+    success: function (pHora) {
+    },
+    dataType: 'text'
+  }
+  );
+}
+
+function buscaTimerNotificacao() {
+  var respTemporizador = new htmldb_Get(null, $v('pFlowId'),
+    'APPLICATION_PROCESS=TEMPORIZADOR_NOTIFICACAO', 0);
+
+  vHoraUltimaNotif = respTemporizador.get();
+
+  return vHoraUltimaNotif;
+}
+
+/**
+  Responsável por atualizar o relogio global, se necessário. deve ser chamado no load e ao exibir notificacao 
+  Caso tempo não tenha sido atingido, retorna o tempo que falta (para atualizar setInterval)
+  
+  Teste (retorna tempo restante em segundos ate a proxima atualizacao): console.log(fAtualizaRelogioGlobal()/60);
+  
+**/
+
+function fAtualizaRelogioGlobal(pTimerExistente) {
+  var timer = $.trim(buscaTimerNotificacao());
+
+  vDataHoraAtual = new Date();
+  //console.log('Hora Atual: ' + vDataHoraAtual);
+
+  if (timer != '') {
+    pTimerExistente.existe = true;
+
+    vHoraAlarme = timerToDate(timer);
+    //console.log('Hora Alarme: ' + vHoraAlarme);
+
+    if (vDataHoraAtual >= vHoraAlarme) {
+      inicializaTemporizador(vDataHoraAtual);
+      //console.log('Hora de atualizar temporizador !!');
+      return 0; // Alerta deve ser imediato
+    } else {
+      return (vHoraAlarme - vDataHoraAtual) / 1000; // retorna tempo em segundos
+    }
+  } else {
+    pTimerExistente = false;
+    inicializaTemporizador(vDataHoraAtual);
+    return G_TIMER_MINUTOS;
+  }
+}
+
+var ifxTimerId;
+
+$(document).ready(function () {
+
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!Notification) {
+      alert('Desktop notifications not available in your browser. Try Chromium.');
+      return;
+    }
+
+    if (Notification.permission !== 'granted')
+      Notification.requestPermission();
+  });
+
+  f_inicializaListas();
+
+  function inicializaTimer(pIdModulo, pClasseMenu) {
+    var appId = $v('pFlowId'); // APP_ID
+    var session = $v('pInstance'); // SESSION
+
+    var vUrl = 'f?p=' + appId + ':4:' + session + '::::';
+
+    var vTimerExistente = { existe: false };
+    var vTempoRestante = fAtualizaRelogioGlobal(vTimerExistente);
+
+    // Busca sempre no load da pagina. Timer deve ser aplicado apenas ao evento automático.
+    if (!vTimerExistente.existe)
+      setOperadorAlerta();
+
+    getOperadorAlerta(vUrl, pIdModulo, pClasseMenu, null, vTimerExistente.existe);
+
+    ifxTimerId = setInterval(timerAlerta, vTempoRestante * 1000);
+
+    function timerAlerta() {
+      setOperadorAlerta();
+      getOperadorAlerta(vUrl, pIdModulo, pClasseMenu, ifxTimerId, true);
+
+      /* limpa timer */
+      clearInterval(ifxTimerId);
+      /* calcula novo tempo restante para o alerta */
+      vTempoRestante = fAtualizaRelogioGlobal(vTimerExistente);
+      /* atribui tempo restante calculado para o evento de alerta */
+      ifxTimerId = setInterval(timerAlerta, vTempoRestante * 1000);
+    }
+  }
+
+  if ($('.menu-superior').length > 0) {
+    /* ********************************* Modulo 2 - Cobranca ********************** */
+    var pIdModulo = '2';
+    var pClasseMenu = 'menu_superior_cobranca';
+    inicializaTimer(pIdModulo, pClasseMenu);
+    /* ********************************* Modulo 3 - CRM (exemplo) ***************** */
+    /*var pIdModulo = '3';
+    var pClasseMenu = 'menu_superior_crm';
+    inicializaTimer(pIdModulo, pClasseMenu);*/
+    /* ********************************* Modulo 5 - An�lise Gerencial (exemplo) *** */
+    /*var pIdModulo = '5';
+    var pClasseMenu = 'menu_superior_analise-gerencial';
+    inicializaTimer(pIdModulo, pClasseMenu);*/
+    /* ******************************************* ************************ ******* */
+  }
+
+  /* Alarme GLOBAL */
+  /*$('#alarme_sistema').click(function () {
+    var appId = $v('pFlowId'); // APP_ID
+    var session = $v('pInstance'); // SESSION
+    consultaAlertas('f?p=' + appId + ':4:' + session + '::::', 'Alertas', null);
+  }); 
+
+  $('#download-lista').click(function () {
+    var appId = $v('pFlowId'); // APP_ID
+    var session = $v('pInstance'); // SESSION
+    consultaAlertas('f?p=' + appId + ':6:' + session + '::::', 'Downloads', null);
+  }); */
+});
+
+/* Mensagem de confirmacao */
+function msg_confirmar_callback_simnao(pThis, pTitulo, pMsg, pBotao, pIcone, pNao, pCallbackSim, pCallbackNao) {
+  var vBotao, vIcone;
+  if (pBotao == 'SNC') vBotao = Ext.MessageBox.YESNOCANCEL;
+  if (pBotao == 'SN') vBotao = Ext.MessageBox.YESNO;
+  if (pBotao == 'O') vBotao = Ext.MessageBox.OK;
+  if (pBotao == 'OC') vBotao = Ext.MessageBox.OKCANCEL;
+  if (vBotao == null) vBotao = Ext.MessageBox.YESNOCANCEL;
+
+  if (pIcone == 'P') vIcone = Ext.MessageBox.QUESTION;
+  if (pIcone == 'E') vIcone = Ext.MessageBox.ERROR;
+  if (pIcone == 'I') vIcone = Ext.MessageBox.INFO;
+  if (pIcone == 'A') vIcone = Ext.MessageBox.WARNING;
+  if (pIcone == 'D') vIcone = 'ext-mb-download';
+
+  Ext.onReady(function () {
+    Ext.MessageBox.show({
+      title: pTitulo,
+      msg: pMsg,
+      buttons: vBotao,
+      fn: Retorno,
+      animEl: pThis,
+      icon: vIcone
+    });
+
+    function Retorno(btn) {
+      if ((btn == 'ok' || btn == 'yes') && pBotao != 'O')
+        pCallbackSim();
+      else
+        if (btn == 'no' && pBotao != 'O')
+          pCallbackNao();
+    };
+
+  });
+};
+
+function ifxAlerta(pMensagem, pTitulo, pNomeBotao, pCallback) {
+  /* if (isCompatibleCordova())
+     navigator.notification.alert(pMensagem, pCallback, pTitulo, pNomeBotao);
+   else {
+  */
+  alert(pMensagem);
+  if (pCallback != null)
+    pCallback();
+  /*}  */
+};
+
+
+function msg_aguarde_motor(pThis, pMsg, pTexto, pTempo, pIcone) {
+
+  var vIcone;
+  if (pIcone == 'P') vIcone = Ext.MessageBox.QUESTION;
+  if (pIcone == 'E') vIcone = Ext.MessageBox.ERROR;
+  if (pIcone == 'I') vIcone = Ext.MessageBox.INFO;
+  if (pIcone == 'A') vIcone = Ext.MessageBox.WARNING;
+  if (pIcone == 'D') vIcone = 'ext-mb-download';
+
+  Ext.MessageBox.show({
+    msg: pMsg,
+    progressText: pTexto,
+    width: 300,
+    wait: true,
+    waitConfig: { interval: 200 },
+    icon: vIcone,
+    animEl: pThis
+  });
+
+  setTimeout(function () {
+    Ext.MessageBox.hide();
+  }, pTempo);
+};
+
+function changeApexSubmitWait(pId, pRequest) {
+  apex.server.process (
+    'verificar_exec_motor_credito', {
+      x01: pId
+    }, {
+       success: function(pData) {
+         if (pData.executarMotor) {
+           $('ul >li > a[title="Confirmar Dados"]').attr('href','javascript:doSubmit("' + pRequest + '");msg_aguarde_motor(null, "Consultando motor de cr�dito. Aguarde", bp_aguarde, 40000000,"I")')
+         }
+       },
+       error: function(jqXHR, textStatus, errorThrown ) {
+       console.log(errorThrown);
+       }
+     }
+   );
+  }
+
+function tornarObrigatorio(pId){
+  $($('label[for="' + pId + '"]')[0]).removeClass("fwLabel fwLabelOp labelOp");
+  $($('label[for="' + pId + '"]')[0]).addClass('fwLabel fwLabelOb labelOb');
+  let label = $('label[for="' + pId + '"]')[1];
+  $($('label[for="' + pId + '"]')[0]).append($('<img src="/i/f_spacer.gif" alt="" class="uAsterisk">'));
+  $($('label[for="' + pId + '"]')[0]).append($('<span class="fwLabelObrigatorio">'));
+  $($('label[for="' + pId + '"]')[0]).append($('<span class="visuallyhidden">(Valor Necess�rio)</span>'));
+  $('label[for="' + pId + '"] label[for="' + pId + '"]').remove();
+  $('label[for="' + pId + '"] span.fwLabelObrigatorio').append(label);
+}
+
+function ToggleAll02(e){
+  if (typeof $(e).attr('checked') !== 'undefined' && $(e).attr('checked') !== false) {
+      $(e).attr('checked', true)
+   }
+  
+  if($(e).is(':checked')) {
+     $(e).closest('table').find('tbody tr td input[type="checkbox"]').attr('checked', true)
+  }
+  else {
+     $(e).closest('table').find('tbody tr td input[type="checkbox"]').attr('checked', false) 
+  }
+}
+
+function ToggleAll01(e) {
+  if (e.checked) {
+      CheckAll01();
+  } else {
+      ClearAll01();
+  }
+}
+
+function Check(e) {
+  e.checked = true;
+}
+
+function Clear(e) {
+  e.checked = false;
+}
+
+function CheckAll01() {
+  var ml = document.wwv_flow;
+  var len = ml.elements.length;
+  for (var i = 0; i < len; i++) {
+      var e = ml.elements[i];
+      if (e.name == "f01") {
+          Check(e);
+      }
+  }
+  ml.f01.checked = true;
+}
+
+function ClearAll01() {
+  var ml = document.wwv_flow;
+  var len = ml.elements.length;
+  for (var i = 0; i < len; i++) {
+      var e = ml.elements[i];
+      if (e.name == "f01") {
+          Clear(e);
+      }
+  }
+  ml.f01.checked = false;
+}
+
+/*
+function fwToggleAll(e) {
+  var name = e.id;
+  if (e.checked) { 
+    fwCheckAll(name);
+  } else {
+    fwClearAll(name);
+  }
+}
+
+function fwCheck(e) { e.checked = true; }
+function fwClear(e) { e.checked = false; }
+
+function fwCheckAll(name) {
+  $('input[type="checkbox"][name="' + name + '"]:not(:checked)').prop('checked', true);
+}
+
+function fwClearAll(name) {
+  $('input[type="checkbox"][name="' + name + '"]:checked').prop('checked', false);
+}
+
+*/
+
+function fwToggleAll(e){
+  if (typeof $(e).prop('checked') !== 'undefined' && $(e).prop('checked') !== false) {
+      $(e).prop('checked', true)
+   }
+  
+  
+  if($(e).is(':checked')) {
+     $(e).closest('table').find('tbody tr td input[type="checkbox"]:not(:disabled)').prop('checked', true)
+  }
+  else {
+     $(e).closest('table').find('tbody tr td input[type="checkbox"]:not(:disabled)').prop('checked', false) 
+  }
+} 
+
+function ifxInformar(message, title, requestOk = undefined, labelOk = 'Fechar') {
+
+  $('#modal-confirma').modal('open')
+  $('.modal-content h4').first().text(title)
+  $('.modal-content p').first().html(message)
+  $('#modal_ok').unbind();
+  $('#modal_ok').html(labelOk);
+  $('a.modal-close.waves-effect.btn-flat').hide();
+  $('#modal_ok').one('click', () => {
+      if (requestOk) {
+        apex.submit(requestOk);
+      } else {
+        $('#modal-confirma').modal('close');
+      }
+  })
+  
+}
+
+function abrirMsgAguarde(pMsg, pSrcImg) {
+
+  const img = document.createElement('img')
+  img.src = pSrcImg;
+  img.className = 'calendario';
+  img.alt = 'Aguarde...';
+  img.border = 0;
+  img.width = 15;
+  img.height = 15;
+
+  const spanStrong = document.createElement('span');
+  spanStrong.innerHTML = ' Aguarde ';
+
+  const strong = document.createElement('strong');
+  strong.appendChild(spanStrong);
+  strong.appendChild(img);
+
+  const p = document.createElement('p');
+  p.appendChild(strong);
+
+  const spanBody = document.createElement('span');
+  spanBody.innerHTML = pMsg;
+
+  const divBody = document.createElement('div');
+  divBody.id = 'waiting-body';
+  divBody.appendChild(spanBody);
+  divBody.appendChild(p);
+
+  const divTitle = document.createElement('div');
+  divTitle.id = 'waiting-title';
+  divTitle.innerHTML = 'Informa��o';
+
+  const divGroup = document.createElement('div');
+  divGroup.appendChild(divTitle);
+  divGroup.appendChild(divBody);
+
+  const i = document.createElement('i');
+  i.className = 'fas fa-info-circle'
+
+  const divGroupMain = document.createElement('div');
+  divGroupMain.appendChild(i);
+  divGroupMain.appendChild(divGroup);
+
+  const divMain = document.createElement('div');
+  divMain.id = 'waiting';
+  divMain.appendChild(divGroupMain);
+
+  document.getElementsByTagName('body')[0].appendChild(divMain);
+
+}
